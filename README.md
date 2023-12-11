@@ -84,15 +84,15 @@ extension View {
 Apply this modifier to a `Rating` instance to define the appearance and behavior of individual stars. For instance, using the previously defined `CircleRatingStyle`:
 ```swift
 Rating(value: $value)
-	.ratingStyle(CircleRatingSyle())
+    .ratingStyle(CircleRatingSyle())
 ```
 
 The `ratingStyle(_:)` modifier is defined on View, so we can apply a style to any view hierarchy, allowing the style to propagate to all `Rating` Views within in. For example:
 ```swift
 VStack {
-	Rating(value: .constant(1))
-	Rating(value: .constant(2))
-	Rating(value: .constant(3))
+    Rating(value: .constant(1))
+    Rating(value: .constant(2))
+    Rating(value: .constant(3))
 }
 .ratingStyle(.circle)
 ```
@@ -100,7 +100,7 @@ VStack {
 To facilitate easy creation of a `Rating` view based on a specific configuration, we've added the following initializer:
 ```swift
 extension Rating {
-	public init(_ configuration: RatingStyleConfiguration)
+    public init(_ configuration: RatingStyleConfiguration)
 }
 ```
 
@@ -127,17 +127,17 @@ struct SystemImageRatingStyle: RatingStyle {
 An alternative method for customizing the `Rating` view was considered, involving the use of `@ViewBuilder` closures to define the appearance of each star. This approach looks like the following:
 ```swift
 struct Rating<Star>: View where Star: View {
-	public init(value: Binding<Int>,
-				spacing: CGFloat? = nil,
-				count: Int = 5,
-				@ViewBuilder starView: (Int, Bool) -> Star
+    public init(value: Binding<Int>,
+                spacing: CGFloat? = nil,
+                count: Int = 5,
+                @ViewBuilder starView: (Int, Bool) -> Star
 }
 ```
 
 The `CircleRatingStyle` from before could then be implemented as:
 ```swift
 Rating(value: $value) { starIndex, isFilled in
-	Image(systemName: isFilled ? "circle.fill" : "circle")
+    Image(systemName: isFilled ? "circle.fill" : "circle")
 }
 ```
 
