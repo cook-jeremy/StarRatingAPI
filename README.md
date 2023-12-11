@@ -130,19 +130,19 @@ struct Rating<Star>: View where Star: View {
     public init(value: Binding<Int>,
                 spacing: CGFloat? = nil,
                 count: Int = 5,
-                @ViewBuilder starView: (Int, Bool) -> Star
+                @ViewBuilder starView: (Bool) -> Star
 }
 ```
 
 The `CircleRatingStyle` from before could then be implemented as:
 ```swift
-Rating(value: $value) { starIndex, isFilled in
+Rating(value: $value) { isFilled in
     Image(systemName: isFilled ? "circle.fill" : "circle")
 }
 ```
 
 While this approach addresses basic customization needs, it introduces limitations and complexities:
-- **Limited Customization:** Having only the `isFilled` parameter limits the customization to the individual star level. It does not easily allow for broader styling such as animations or interactions that span multiple stars. 
+- **Limited Customization:** Having only the `isFilled` parameters limits the customization to the individual star level. It does not easily allow for broader styling such as animations or interactions that span multiple stars. 
 - **Scalability:** If a user wants to apply a consistent style across multiple `Rating` views within the app, they're forced to implement this closure in every place, or to create a wrapper view and use that everywhere. This leads to more repetitive and verbose code, compared to applying one `.ratingStyle(_:)` modifier at the root of the view hierarchy.
 - **Mixing of Functional and Stylistic Aspects:** Using `@ViewBuilder` directly in the `Rating` initializer intertwines the functional and stylistic code, leading to less maintainable and less readable code.
 
