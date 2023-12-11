@@ -1,19 +1,22 @@
 # Star Rating API Proposal
 
 ## Introduction
-This proposal introduces an API in the SwiftUI framework for a new Star Rating View. The aim is to provide a consistent rating experience across all Apple platforms. 
+This proposal introduces an API in the SwiftUI framework for a new Star Rating view. The aim is to provide a consistent rating experience across all Apple platforms.
+
+<img width="133" alt="Screenshot 2023-12-07 at 11 02 58 PM" src="https://github.com/cook-jeremy/StarRatingAPI/assets/12803067/ae6806b4-7bd9-4196-a8d6-450aab83ad6a">
+
 
 ## Detailed Design
 To begin, it's important to differentiate between two distinct types of star rating interfaces:
 - **Interactive Integer Star Rating:** This is a user-interactive view where users can select a whole-number rating.
-- **Non-Interactive Floating Point Star Rating:** This view is designed to display a floating point star rating view that represents the average of many ratings. This view is not meant for user interaction because a user can't easily or accurately submit a precise floating point rating on most platforms.
+- **Non-Interactive Floating Point Star Rating:** This view displays a floating point star rating that represents the average of many ratings. This view is not meant for user interaction because a user can't easily or accurately submit a precise floating point rating on most platforms.
 
-Recognizing the fundamental differences between these two types of star rating UIs, we propose the creation of two separate views. The first is an interactive view for integer ratings, named `Rating`, and the second is a non-interactive view for displaying average floating-point ratings, named `AverageRating`. In this proposal we will only cover the API for `Rating`. The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars.
+Recognizing the fundamental differences between these two types of star rating UIs, we propose the creation of two separate views. In this proposal, we will only propose an API for the interactive integer star rating view, named `Rating`. The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars.
 ### `Rating` View
 The `Rating` View has only one required parameter: a binding to the integer value representing the rating. It also offers several optional customization parameters, each with a default value:
 - **Spacing Between Stars:**  Uses the default spacing of `HStack`.
 - **Star Count:** Defaults to 5.
-- **Star Style:** The default style uses the SF Symbols `star` and `star.filled`.
+- **Star Style:** The default style uses the SF Symbols `star` and `star.filled` with an orange foreground color.
 
 The `Rating` View is structured as follows:
 ```swift
@@ -49,20 +52,16 @@ protocol RatingStyle {
 }
 ```
 
-To define a custom rating style, implement the `makeBody(configuration:)` method. Utilize the `configuration` parameter—a `RatingStyleConfiguration` instance—to access the rating's star index and value. The implementation should return a view which has the appearance and behavior of one of the stars in a rating view. 
+To define a custom rating style, implement the `makeBody(configuration:)` method. Utilize the `configuration` parameter—a `RatingStyleConfiguration` instance—to access the rating's star index and value. The implementation should return a view which has the appearance and behavior of one of the stars in the rating view. 
 
 For example, here's how to create a `CircleRatingStyle`, which uses circles instead of stars:
 ```swift
 struct CircleRatingStyle: RatingStyle {
     func makeBody(configuration: Configuration) -> some View {
         Image(systemName: configuration.isFilled ? "circle.fill" : "circle")
-            .onTapGesture {
-                configuration.value = configuration.starIndex + 1
-            }
     }
 }
 ```
-Note: The `starIndex` begins at 0. To align with the rating value, add 1 to the `starIndex`.
 
 The `RatingStyleConfiguration` is defined as follows:
 ```swift
@@ -87,7 +86,7 @@ Rating(value: $value)
     .ratingStyle(CircleRatingSyle())
 ```
 
-The `ratingStyle(_:)` modifier is defined on View, so we can apply a style to any view hierarchy, allowing the style to propagate to all `Rating` Views within in. For example:
+The `ratingStyle(_:)` modifier is defined on View, so we can apply a style to any view hierarchy, allowing the style to propagate to all `Rating` views within. For example:
 ```swift
 VStack {
     Rating(value: .constant(1))
@@ -97,7 +96,7 @@ VStack {
 .ratingStyle(.circle)
 ```
 
-To facilitate easy creation of a `Rating` view based on a specific configuration, we've added the following initializer:
+To facilitate easy creation of a `Rating` view based on a specific configuration, the API defines the following initializer:
 ```swift
 extension Rating {
     public init(_ configuration: RatingStyleConfiguration)
@@ -124,7 +123,7 @@ struct SystemImageRatingStyle: RatingStyle {
 ```
 
 ## Alternatives Considered
-An alternative method for customizing the `Rating` view was considered, involving the use of `@ViewBuilder` closures to define the appearance of each star. This approach looks like the following:
+An alternative method for customizing the `Rating` view was considered, involving the use of a `@ViewBuilder` closure to define the appearance of each star. This approach looks like the following:
 ```swift
 struct Rating<Star>: View where Star: View {
     public init(value: Binding<Int>,
