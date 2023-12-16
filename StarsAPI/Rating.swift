@@ -236,23 +236,59 @@ struct InteractiveRatingView: View {
         .padding()
 }
 
-struct NonIntegerRatingStyle: RatingStyle {
-    var systemImage: String
-    
-    @ViewBuilder
+struct HalfStarRatingStyle: RatingStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: configuration.spacing) {
             ForEach(0 ..< configuration.count, id: \.self) { i in
-                let isFilled = Double(i) < configuration.value
-                Image(systemName: isFilled ? "\(systemImage).fill" : systemImage)
-                    .onTapGesture {
-                        configuration.value = Double(i + 1)
+                let starIndex = Double(i + 1)
+                Group {
+                    if configuration.value >= starIndex {
+                        Image(systemName: "star.fill")
+                    } else if configuration.value + 0.5 >= starIndex {
+                        Image(systemName: "star.leadinghalf.filled")
+                    } else {
+                        Image(systemName: "star")
                     }
+                }
+                .foregroundStyle(.orange)
+                .onTapGesture {
+                    configuration.value = starIndex
+                }
             }
         }
     }
 }
 
-#Preview("Non-integer Rating") {
-    Rating(value: .constant(3.5))
+#Preview("Half-Star Rating") {
+    ForEach(0 ..< 11) { i in
+        Rating(value: .constant(Double(i) / 2))
+    }
+    .ratingStyle(HalfStarRatingStyle())
+}
+
+struct FPSquareRatingStyle: RatingStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: configuration.spacing) {
+            ForEach(0 ..< configuration.count, id: \.self) { i in
+                let percent: Double = configuration.value - Double(i)
+                let minMax: Double = min(1.0, max(0.0, percent))
+                FloatingPointSquare(percent: minMax)
+            }
+        }
+    }
+}
+
+#Preview("Floating Point Square Rating") {
+    Grid {
+        ForEach(0 ..< 26) { i in
+            let value: Double = Double(i) / 5
+            GridRow {
+                Text("value: \(value)")
+                Rating(value: .constant(value))
+            }
+        }
+    }
+    .ratingStyle(FPSquareRatingStyle())
+    .frame(height: 1000)
+    .padding()
 }

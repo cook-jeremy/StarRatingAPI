@@ -1,0 +1,10 @@
+.DS_Store
+/.build
+/Packages
+xcuserdata/
+DerivedData/
+*/project.xcworkspace/contents.xcworkspacedata
+*/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*/UserInterfaceState.xcuserstate
+*/xcschememanagement.plist
+.netrc
