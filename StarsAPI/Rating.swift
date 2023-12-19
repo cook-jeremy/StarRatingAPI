@@ -7,32 +7,33 @@
 
 import SwiftUI
 
-struct RatingStyleConfiguration {
-    @Binding var value: Double
+struct RatingStyleConfiguration<Value: BinaryFloatingPoint> {
+    @Binding var value: Value
     var spacing: CGFloat?
     var count: Int
 }
 
 protocol RatingStyle {
-    associatedtype Body: View
-    typealias Configuration = RatingStyleConfiguration
-    @ViewBuilder func makeBody(configuration: Configuration) -> Body
+    @ViewBuilder 
+    func makeBody<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>) -> AnyView
 }
 
 struct SystemImageRatingStyle: RatingStyle {
     var systemImage: String
     
     @ViewBuilder
-    func makeBody(configuration: RatingStyleConfiguration) -> some View {
-        HStack(spacing: configuration.spacing) {
-            ForEach(0 ..< configuration.count, id: \.self) { i in
-                let isFilled = i < Int(configuration.value)
-                Image(systemName: isFilled ? "\(systemImage).fill" : systemImage)
-                    .onTapGesture {
-                        configuration.value = Double(i + 1)
-                    }
+    func makeBody<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>) -> AnyView {
+        AnyView(
+            HStack(spacing: configuration.spacing) {
+                ForEach(0 ..< configuration.count, id: \.self) { i in
+                    let isFilled = i < Int(configuration.value)
+                    Image(systemName: isFilled ? "\(systemImage).fill" : systemImage)
+                        .onTapGesture {
+                            configuration.value = V(i + 1)
+                        }
+                }
             }
-        }
+        )
     }
 }
 
@@ -80,13 +81,11 @@ struct Rating: View {
     }
     
     var body: some View {
-        AnyView(
-            myStyle.makeBody(
-                configuration: .init(
-                    value: $value,
-                    spacing: spacing,
-                    count: count
-                )
+        myStyle.makeBody(
+            configuration: .init(
+                value: $value,
+                spacing: spacing,
+                count: count
             )
         )
     }
@@ -144,15 +143,17 @@ extension RatingStyle where Self == SystemImageRatingStyle {
 }
 
 struct ResizableRatingStyle: RatingStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: configuration.spacing) {
-            ForEach(0 ..< configuration.count, id: \.self) { i in
-                let isFilled = Double(i) < configuration.value
-                Image(systemName: isFilled ? "star.fill" : "star")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+    func makeBody<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>) -> AnyView {
+        AnyView(
+            HStack(spacing: configuration.spacing) {
+                ForEach(0 ..< configuration.count, id: \.self) { i in
+                    let isFilled = V(i) < configuration.value
+                    Image(systemName: isFilled ? "star.fill" : "star")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
             }
-        }
+        )
     }
 }
 
@@ -233,25 +234,27 @@ struct InteractiveRatingView: View {
 }
 
 struct HalfStarRatingStyle: RatingStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: configuration.spacing) {
-            ForEach(0 ..< configuration.count, id: \.self) { i in
-                let starIndex = Double(i + 1)
-                Group {
-                    if configuration.value >= starIndex {
-                        Image(systemName: "star.fill")
-                    } else if configuration.value + 0.5 >= starIndex {
-                        Image(systemName: "star.leadinghalf.filled")
-                    } else {
-                        Image(systemName: "star")
+    func makeBody<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>) -> AnyView {
+        AnyView(
+            HStack(spacing: configuration.spacing) {
+                ForEach(0 ..< configuration.count, id: \.self) { i in
+                    let starIndex = Double(i + 1)
+                    Group {
+                        if configuration.value >= V(starIndex) {
+                            Image(systemName: "star.fill")
+                        } else if configuration.value + 0.5 >= V(starIndex) {
+                            Image(systemName: "star.leadinghalf.filled")
+                        } else {
+                            Image(systemName: "star")
+                        }
+                    }
+                    .foregroundStyle(.orange)
+                    .onTapGesture {
+                        configuration.value = V(starIndex)
                     }
                 }
-                .foregroundStyle(.orange)
-                .onTapGesture {
-                    configuration.value = starIndex
-                }
             }
-        }
+        )
     }
 }
 
@@ -263,14 +266,16 @@ struct HalfStarRatingStyle: RatingStyle {
 }
 
 struct FPSquareRatingStyle: RatingStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: configuration.spacing) {
-            ForEach(0 ..< configuration.count, id: \.self) { i in
-                let percent: Double = configuration.value - Double(i)
-                let minMax: Double = min(1.0, max(0.0, percent))
-                FloatingPointSquare(percent: minMax)
+    func makeBody<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>) -> AnyView {
+        AnyView(
+            HStack(spacing: configuration.spacing) {
+                ForEach(0 ..< configuration.count, id: \.self) { i in
+                    let percent: V = configuration.value - V(i)
+                    let minMax: V = min(1.0, max(0.0, percent))
+                    FloatingPointSquare(percent: Double(minMax))
+                }
             }
-        }
+        )
     }
 }
 
