@@ -4,6 +4,7 @@
 This proposal introduces an API in the SwiftUI framework for a new Star Rating view. The aim is to provide a consistent rating experience across all Apple platforms, while also providing customizability for individualized apps.
 
 <img width="133" alt="Screenshot 2023-12-07 at 11 02 58 PM" src="https://github.com/cook-jeremy/StarRatingAPI/assets/12803067/ae6806b4-7bd9-4196-a8d6-450aab83ad6a">
+
 ## Detailed Design
 There's an important dichotomy in star rating views: interactive and non-interactive. Interactive star rating UIs typically provide the user the choice of selecting in integer or half-integer star increments, instead of a continuous range, because one can't easily or accurately submit a precise floating point rating on most platforms. For non-interactive star ratings, the view can display a floating point rating to some specified precision (e.g. one decimal place). These non-interactive star rating views typically show the average of many ratings. We'd like to accommodate to both of these typical use cases with one view: `Rating`. The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars.
 
