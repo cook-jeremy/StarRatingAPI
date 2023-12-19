@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-public struct RatingStyleConfiguration {
-    @Binding public var value: Double
-    public var spacing: CGFloat?
-    public var count: Int
+struct RatingStyleConfiguration {
+    @Binding var value: Double
+    var spacing: CGFloat?
+    var count: Int
 }
 
 protocol RatingStyle {
@@ -23,26 +23,16 @@ struct SystemImageRatingStyle: RatingStyle {
     var systemImage: String
     
     @ViewBuilder
-    func makeBody(configuration: Configuration) -> some View {
+    func makeBody(configuration: RatingStyleConfiguration) -> some View {
         HStack(spacing: configuration.spacing) {
             ForEach(0 ..< configuration.count, id: \.self) { i in
-                let isFilled = Double(i) < configuration.value
+                let isFilled = i < Int(configuration.value)
                 Image(systemName: isFilled ? "\(systemImage).fill" : systemImage)
                     .onTapGesture {
                         configuration.value = Double(i + 1)
                     }
             }
         }
-    }
-}
-
-extension RatingStyle where Self == SystemImageRatingStyle {
-    static var star: SystemImageRatingStyle {
-        SystemImageRatingStyle(systemImage: "star")
-    }
-    
-    static var circle: SystemImageRatingStyle {
-        SystemImageRatingStyle(systemImage: "circle")
     }
 }
 
@@ -57,6 +47,19 @@ extension EnvironmentValues {
     }
 }
 
+struct RatingStyleModifier<S: RatingStyle>: ViewModifier {
+    var style: S
+    func body(content: Content) -> some View {
+        content.environment(\.ratingStyle, style)
+    }
+}
+
+extension View {
+    func ratingStyle<S>(_ style: S) -> some View where S : RatingStyle {
+        return self.modifier(RatingStyleModifier(style: style))
+    }
+}
+
 struct Rating: View {
     
     @Environment(\.ratingStyle) var myStyle
@@ -65,16 +68,13 @@ struct Rating: View {
     private var count: Int
     private var spacing: CGFloat?
     
-    init<V>(
-        value: Binding<V>,
+    init(
+        value: Binding<Double>,
         spacing: CGFloat? = nil,
         count: Int = 5
-    ) where V: BinaryFloatingPoint {
+    ) {
         precondition(count >= 0)
-        self._value = Binding<Double>(
-            get: { Double(value.wrappedValue) },
-            set: { value.wrappedValue = V($0) }
-        )
+        self._value = value
         self.spacing = spacing
         self.count = count
     }
@@ -92,19 +92,15 @@ struct Rating: View {
     }
 }
 
-struct RatingStyleModifier<S: RatingStyle>: ViewModifier {
-    var style: S
-    func body(content: Content) -> some View {
-        content.environment(\.ratingStyle, style)
+extension RatingStyle where Self == SystemImageRatingStyle {
+    static var star: SystemImageRatingStyle {
+        SystemImageRatingStyle(systemImage: "star")
+    }
+
+    static var circle: SystemImageRatingStyle {
+        SystemImageRatingStyle(systemImage: "circle")
     }
 }
-
-extension View {
-    func ratingStyle<S>(_ style: S) -> some View where S : RatingStyle {
-        return self.modifier(RatingStyleModifier(style: style))
-    }
-}
-
 
 // TODO: Implement this
 //extension Rating {

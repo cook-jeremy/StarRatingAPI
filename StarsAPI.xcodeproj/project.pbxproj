@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		802064AD2B30ECDB00771BE2 /* GenericInitTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802064AC2B30ECDB00771BE2 /* GenericInitTest.swift */; };
 		8027DD242B22217E00A271FE /* StarsAPIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8027DD232B22217E00A271FE /* StarsAPIApp.swift */; };
 		8027DD262B22217E00A271FE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8027DD252B22217E00A271FE /* ContentView.swift */; };
 		8027DD282B22217F00A271FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8027DD272B22217F00A271FE /* Assets.xcassets */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		802064AC2B30ECDB00771BE2 /* GenericInitTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericInitTest.swift; sourceTree = "<group>"; };
 		8027DD202B22217E00A271FE /* StarsAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StarsAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8027DD232B22217E00A271FE /* StarsAPIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarsAPIApp.swift; sourceTree = "<group>"; };
 		8027DD252B22217E00A271FE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -65,6 +67,7 @@
 			isa = PBXGroup;
 			children = (
 				807C17F42B2B20D9002CA641 /* OpaqueTypeExample.swift */,
+				802064AC2B30ECDB00771BE2 /* GenericInitTest.swift */,
 				8027DD232B22217E00A271FE /* StarsAPIApp.swift */,
 				8027DD252B22217E00A271FE /* ContentView.swift */,
 				8027DD322B2221D500A271FE /* Rating.swift */,
@@ -160,6 +163,7 @@
 				8027DD262B22217E00A271FE /* ContentView.swift in Sources */,
 				807C17F52B2B20D9002CA641 /* OpaqueTypeExample.swift in Sources */,
 				8027DD242B22217E00A271FE /* StarsAPIApp.swift in Sources */,
+				802064AD2B30ECDB00771BE2 /* GenericInitTest.swift in Sources */,
 				80E6F5A32B2DE4A900D87B56 /* FloatingPointSquare.swift in Sources */,
 				80F9D5E22B266F9400B2CEAB /* AverageRating.swift in Sources */,
 				8027DD332B2221D500A271FE /* Rating.swift in Sources */,
