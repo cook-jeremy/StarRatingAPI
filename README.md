@@ -11,17 +11,18 @@ There's an important dichotomy in star rating views: interactive and non-interac
 The `Rating` View has only one required parameter: a binding to a type which conforms to `BinaryFloatingPoint`, representing the rating. It also offers several optional customization parameters, each with a default value:
 - **Spacing:** The spacing between stars. The default spacing is that of `HStack`.
 - **Count:** The number of stars, defaults to 5.
+
+(TODO)
 - **Precision:** The increment precision between ratings. A value of 1 indicates integer ratings, 0.5 indicates half-integer ratings, etc. The default value is 1.
 
 The initializer for the `Rating` View is structured as follows:
 ```swift
 public struct Rating: View {
-    public init<V, T>(
+    public init<V>(
         value: Binding<V>,
         spacing: CGFloat? = nil,
-        count: Int = 5,
-        precision: T = 1.0
-    ) where V: BinaryFloatingPoint, T: BinaryFloatingPOint
+        count: Int = 5
+    ) where V: BinaryFloatingPoint
 }
 ```
 
