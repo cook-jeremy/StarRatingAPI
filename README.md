@@ -12,7 +12,7 @@ The `Rating` View has only one required parameter: a binding to a type which con
 - **Spacing:** The spacing between stars. The default spacing is that of `HStack`.
 - **Count:** The number of stars, defaults to 5.
 
-(TODO)
+TODO:
 - **Precision:** The increment precision between ratings. A value of 1 indicates integer ratings, 0.5 indicates half-integer ratings, etc. The default value is 1.
 
 The initializer for the `Rating` View is structured as follows:
