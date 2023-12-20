@@ -61,33 +61,33 @@ extension View {
     }
 }
 
-struct Rating: View {
+struct Rating<Value: BinaryFloatingPoint>: View {
     
     @Environment(\.ratingStyle) var myStyle
     
-    @Binding var value: Double
-    private var count: Int
-    private var spacing: CGFloat?
+    private var configuration: RatingStyleConfiguration<Value>
     
     init(
-        value: Binding<Double>,
+        value: Binding<Value>,
         spacing: CGFloat? = nil,
         count: Int = 5
     ) {
         precondition(count >= 0)
-        self._value = value
-        self.spacing = spacing
-        self.count = count
+        self.configuration = .init(
+            value: value,
+            spacing: spacing,
+            count: count
+        )
     }
     
     var body: some View {
-        myStyle.makeBody(
-            configuration: .init(
-                value: $value,
-                spacing: spacing,
-                count: count
-            )
-        )
+        myStyle.makeBody(configuration: configuration)
+    }
+}
+
+extension Rating {
+    init(_ configuration: RatingStyleConfiguration<Value>) {
+        self.configuration = configuration
     }
 }
 
@@ -100,13 +100,6 @@ extension RatingStyle where Self == SystemImageRatingStyle {
         SystemImageRatingStyle(systemImage: "circle")
     }
 }
-
-// TODO: Implement this
-//extension Rating {
-//    init(_ configuration: RatingStyleConfiguration) {
-//        self.init(value: configuration.$value)
-//    }
-//}
 
 // MARK: - Previews
 
@@ -140,6 +133,22 @@ extension RatingStyle where Self == SystemImageRatingStyle {
     }
     .ratingStyle(.circle)
     .padding()
+}
+
+struct RedBorderRatingStyle: RatingStyle {
+    func makeBody<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>) -> AnyView {
+        AnyView(
+            Rating(configuration)
+                .padding()
+                .border(.red)
+        )
+    }
+}
+
+#Preview("Extend Existing Style") {
+    Rating(value: .constant(3))
+        .ratingStyle(RedBorderRatingStyle())
+        .ratingStyle(.circle)
 }
 
 struct ResizableRatingStyle: RatingStyle {
