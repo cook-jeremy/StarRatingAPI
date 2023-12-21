@@ -11,7 +11,10 @@ import SwiftUI
 struct StarsAPIApp: App {
     var body: some Scene {
         WindowGroup {
-            Text("TODO Demo app")
+            Rating(value: .constant(3))
+                .ratingStyle(ColoredBorderRatingStyle(color: .blue))
+                .ratingStyle(ColoredBorderRatingStyle(color: .red))
+                .ratingStyle(.circle)
         }
     }
 }

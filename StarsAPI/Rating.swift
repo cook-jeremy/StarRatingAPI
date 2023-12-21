@@ -11,6 +11,7 @@ struct RatingStyleConfiguration<Value: BinaryFloatingPoint> {
     @Binding var value: Value
     var spacing: CGFloat?
     var count: Int
+    var styleLevel: Int = 1
 }
 
 protocol RatingStyle {
@@ -37,35 +38,38 @@ struct SystemImageRatingStyle: RatingStyle {
     }
 }
 
-struct RatingStyleEnvironmentKey: EnvironmentKey {
-    static let defaultValue: any RatingStyle = SystemImageRatingStyle(systemImage: "star")
+struct RatingStylesEnvironmentKey: EnvironmentKey {
+    static let defaultValue: [any RatingStyle] = [SystemImageRatingStyle(systemImage: "star")]
 }
 
 extension EnvironmentValues {
-    var ratingStyle: any RatingStyle {
-        get { self[RatingStyleEnvironmentKey.self] }
-        set { self[RatingStyleEnvironmentKey.self] = newValue }
+    var ratingStyles: [any RatingStyle] {
+        get { self[RatingStylesEnvironmentKey.self] }
+        set { self[RatingStylesEnvironmentKey.self] = newValue }
     }
 }
 
 struct RatingStyleModifier<S: RatingStyle>: ViewModifier {
+    @Environment(\.ratingStyles) var styles
     var style: S
     func body(content: Content) -> some View {
-        content.environment(\.ratingStyle, style)
+        content.environment(\.ratingStyles, styles + [style])
     }
 }
 
 extension View {
     func ratingStyle<S>(_ style: S) -> some View where S : RatingStyle {
-        return self.modifier(RatingStyleModifier(style: style))
+        self.modifier(RatingStyleModifier(style: style))
     }
 }
 
 struct Rating<Value: BinaryFloatingPoint>: View {
     
-    @Environment(\.ratingStyle) var myStyle
+    @Environment(\.ratingStyles) var ratingStyles
     
     private var configuration: RatingStyleConfiguration<Value>
+    
+    private var initFromConfiguration: Bool = false
     
     init(
         value: Binding<Value>,
@@ -81,13 +85,15 @@ struct Rating<Value: BinaryFloatingPoint>: View {
     }
     
     var body: some View {
-        myStyle.makeBody(configuration: configuration)
+        let styleIndex = ratingStyles.count - configuration.styleLevel
+        ratingStyles[styleIndex].makeBody(configuration: configuration)
     }
 }
 
 extension Rating {
     init(_ configuration: RatingStyleConfiguration<Value>) {
         self.configuration = configuration
+        self.configuration.styleLevel += 1
     }
 }
 
@@ -135,19 +141,20 @@ extension RatingStyle where Self == SystemImageRatingStyle {
     .padding()
 }
 
-struct RedBorderRatingStyle: RatingStyle {
+struct ColoredBorderRatingStyle: RatingStyle {
+    var color: Color
     func makeBody<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>) -> AnyView {
         AnyView(
             Rating(configuration)
                 .padding()
-                .border(.red)
+                .border(color)
         )
     }
 }
 
 #Preview("Extend Existing Style") {
     Rating(value: .constant(3))
-        .ratingStyle(RedBorderRatingStyle())
+        .ratingStyle(ColoredBorderRatingStyle(color: .red))
         .ratingStyle(.circle)
 }
 
@@ -268,10 +275,13 @@ struct HalfStarRatingStyle: RatingStyle {
 }
 
 #Preview("Half-Star Rating") {
-    ForEach(0 ..< 11) { i in
-        Rating(value: .constant(Double(i) / 2))
+    VStack {
+        ForEach(0 ..< 11) { i in
+            Rating(value: .constant(Double(i) / 2))
+        }
+        .ratingStyle(HalfStarRatingStyle())
     }
-    .ratingStyle(HalfStarRatingStyle())
+    .padding()
 }
 
 struct FPSquareRatingStyle: RatingStyle {

@@ -151,4 +151,4 @@ protocol RatingStyle {
     @ViewBuilder func makeBody(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>) -> Body 
 }
 ```
-This protocol compiles fine, however, it's impossible to create a type which conforms to this protocol. As of Swift 5.9.2: "it's impossible to have a type `T` that's chosen by the caller (and therefore get a `RatingStyleConfiguration<T>`), and then produce an opaque type that's independent of `T`. There's no way to return an opaque type from a generic function without it being dependent on the function's generic parameters." We either need to type erase `RatingStyleConfiguration` over `Value`, or erase `some View` to `AnyView`. 
+This protocol compiles fine, however, it's impossible to create a type which conforms to this protocol. Associated type inference can only infer an opaque result type for a non-generic requirement, because the opaque type is parameterized by the function's own generic arguments. So we either need to type erase `RatingStyleConfiguration` over `Value`, or erase `some View` to `AnyView`.
