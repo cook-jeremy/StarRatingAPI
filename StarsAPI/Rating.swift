@@ -154,8 +154,10 @@ struct ColoredBorderRatingStyle: RatingStyle {
 
 #Preview("Extend Existing Style") {
     Rating(value: .constant(3))
+        .ratingStyle(ColoredBorderRatingStyle(color: .blue))
         .ratingStyle(ColoredBorderRatingStyle(color: .red))
         .ratingStyle(.circle)
+        .padding()
 }
 
 struct ResizableRatingStyle: RatingStyle {
@@ -309,6 +311,6 @@ struct FPSquareRatingStyle: RatingStyle {
         }
     }
     .ratingStyle(FPSquareRatingStyle())
-    .frame(height: 1000)
+    .frame(height: 700)
     .padding()
 }
