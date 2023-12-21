@@ -11,7 +11,7 @@ import SwiftUI
 struct StarsAPIApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Text("TODO Demo app")
         }
     }
 }
