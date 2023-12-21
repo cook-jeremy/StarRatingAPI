@@ -17,45 +17,44 @@ TODO:
 
 The initializer for the `Rating` View is structured as follows:
 ```swift
-public struct Rating: View {
-    public init<V>(
-        value: Binding<V>,
+public struct Rating<Value: BinaryFloatingPoint>: View {
+    public init(
+        value: Binding<Value>,
         spacing: CGFloat? = nil,
         count: Int = 5
-    ) where V: BinaryFloatingPoint
+    )
 }
 ```
 
 Aligning with the design philosophy of SwiftUI of separating functional and stylistic code, we introduce a `RatingStyle` protocol to customize the `Rating` view. To customize the `Rating` View, create a type conforming to the `RatingStyle` protocol:
 ```swift
-protocol RatingStyle {
-    associatedtype Body: View
-    typealias Configuration = RatingStyleConfiguration
-    @ViewBuilder func makeBody(configuration: Configuration) -> Body
+public protocol RatingStyle {
+    @ViewBuilder func makeBody<Value: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<Value>) -> AnyView
 }
 ```
 
 The `RatingStyleConfiguration` is defined as:
 ```swift
-public struct RatingStyleConfiguration {
-    @Binding public var value: Double { get nonmutating set }
+public struct RatingStyleConfiguration<Value: BinaryFloatingPoint> {
+    @Binding public var value: Value { get nonmutating set }
     public var count: Int
     public var spacing: CGFloat
 }
 ```
-
 To define a custom rating style, create a type which conforms to `RatingStyle` by implementing the `makeBody(configuration:)` method. This method is responsible for generating the view for *all* the stars in the `Rating` View. Utilize the `configuration` parameter—a `RatingStyleConfiguration` instance—to access the rating's value, star count, and spacing. The implementation should return a view which has the appearance and behavior of all of the stars in the rating view.
 
 For example, here's how to create a `CircleRatingStyle`, which uses circles instead of stars:
 ```swift
 struct CircleRatingStyle: RatingStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: spacing) {
-            ForEach(0 ..< configuration.count, id: \.self) { i in
-                let isFilled = Double(i) < configuration.value
-                Image(systemName: isFilled ? "circle.fill" : "circle")    
+    func makeBody<Value: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<Value>) -> AnyView {
+        AnyView(
+            HStack(spacing: configuration.spacing) {
+                ForEach(0 ..< configuration.count, id: \.self) { i in
+                    let isFilled = Value(i) < configuration.value
+                    Image(systemName: isFilled ? "circle.fill" : "circle")
+                }
             }
-        }
+        )
     }
 }
 ```
@@ -76,7 +75,7 @@ Rating(value: $value)
 To facilitate easy creation of a `Rating` view based on a specific configuration, use the following initializer:
 ```swift
 extension Rating {
-    public init(_ configuration: RatingStyleConfiguration)
+    public init(_ configuration: RatingStyleConfiguration<Value>)
 }
 ```
 This initializer is particularly useful for custom rating styles that aim to modify the existing style rather than implementing an entirely new one. For instance, the `RedBorderRatingStyle` below adds a red border to the rating while retaining the rating's current style:
@@ -87,15 +86,6 @@ struct RedBorderRatingStyle: RatingStyle {
             .padding()
             .border(.red)
     }
-}
-```
-
-Given there are over 2,000 SF Symbols which have a `.fill` counterpart (like `star` and `star.fill`), we offer an API to easily create a custom `RatingStyle`  using system images:
-```swift
-struct SystemImageRatingStyle: RatingStyle {
-    var systemImage: String
-    var fillSystemImage: String
-    func makeBody(configuration: Configuration) -> some View
 }
 ```
 
@@ -132,42 +122,20 @@ Therefore, although the `@ViewBuilder` approach provides a straightforward metho
 ### Alternative 2
 For ease of use, we considered a `RatingStyle` who's `makeBody(configuration:)` creates the appearance and behavior of of *each* star, instead of all stars. The advantage of such a configuration allows for easier creation of styles which are symmetric for each star.
 
-# Extras
-To create a basic `Rating` View, you only need to provide a binding to a star rating value:
-```swift
-@State var value: Int = 3
 
-var body: some View {
-    Rating(value: $value)
+### Alternative 3
+Given there are over 2,000 SF Symbols which have a `.fill` counterpart (like `star` and `star.fill`), we offer an API to easily create a custom `RatingStyle`  using system images:
+```swift
+struct SystemImageRatingStyle: RatingStyle {
+    var systemImage: String
+    var fillSystemImage: String
+    func makeBody(configuration: Configuration) -> some View
 }
 ```
-
-For more control, you can set a constant integer rating (to disable user interaction), specify the spacing between stars, and define the number of stars:
-```swift
-Rating(value: .constant(3), spacing: 5, count: 10)
-```
-
+However, this creates a dependency on SF Symbols just for the convenience of implementing a simple rating, which is not worth the trade-off.
 
 # Issues
-We want the initializer for `Rating` to be generic over the value of the rating, so that we can create a rating for any floating point type: `Double`, `Float`, `Float80`, etc. However, `RatingStyle` should be agnostic to this detail, so that a rating style can be applied regardless of the underlying rating value type. This constraint means we can't use a generic parameter in `RatingStyleConfiguration` because then `RatingStyle` needs to know this type:
-```swift
-struct RatingStyleConfiguration<Value: BinaryFloatingPoint> {
-    @Binding var value: Value
-}
-
-protocol RatingStyle {
-    associatedtype Body: View
-    @ViewBuilder func makeBody(configuration: RatingStyleConfiguration) -> Body // Reference to generic type RatingStyleConfiguration requires arguments in <...>
-}
-```
-Generics are out, but it should still be easy to use the binding in `RatingStyleConfiguration`, so that the `makeBody` of a rating style can easily modify this value. 
-
-
-We can't have:
-```swift
-struct Rating<Style: RatingStyle, Value: BinaryFloatingPoint>: View where Style.Value == Value
-```
-The `RatingStyle`'s `makeBody` method consumes a `RatingStyleConfiguration<Value>`, which stores a `@Binding` to the `Value` of the rating. Suppose we have two `Rating` views which use two different value types -- a `Float` and a `Double`-- and we want to apply a generic rating style to both.
+A rating style should be agnostic to the specific underlying types of `Value` which are used by `Rating<Value>` in the view hierarchy. For example, the following should apply the style regardless of `Float` or `Double`:
 ```swift
 VStack {
     Rating(value: .constant(Float(3.2)))
@@ -175,4 +143,12 @@ VStack {
 }
 .ratingStyle(CircleRatingStyle())
 ```
-The problem here is that we can't use an `@Environment` variable to store this rating style, because it depends on `Value`. We need `Value` to be an existential type for any of this to work.
+
+To support this, the `RatingStyle` protocol needs to use an opaque type for the value of the `RatingStyleConfiguration`: 
+```swift
+protocol RatingStyle {
+    associatedtype Body: View
+    @ViewBuilder func makeBody(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>) -> Body 
+}
+```
+This protocol compiles fine, however, it's impossible to create a type which conforms to this protocol. As of Swift 5.9.2: "it's impossible to have a type `T` that's chosen by the caller (and therefore get a `RatingStyleConfiguration<T>`), and then produce an opaque type that's independent of `T`. There's no way to return an opaque type from a generic function without it being dependent on the function's generic parameters." We either need to type erase `RatingStyleConfiguration` over `Value`, or erase `some View` to `AnyView`. 
