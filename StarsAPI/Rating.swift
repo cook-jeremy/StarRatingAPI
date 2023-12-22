@@ -256,11 +256,19 @@ struct ResizableRatingStyle: RatingStyle {
 }
 
 struct InteractiveRatingView: View {
-    @State private var value = 0.0
+    @State private var value: Double = 0.0
+    
+    @State private var value2: Float = 0.0
     
     var body: some View {
-        Rating(value: $value)
-            .foregroundColor(.orange)
+        VStack {
+            Rating(value: $value)
+                .foregroundColor(.orange)
+            
+            Rating(value: $value2)
+                .foregroundColor(.blue)
+        }
+        .ratingStyle(.circle)
     }
 }
 
