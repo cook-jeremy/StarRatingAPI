@@ -12,8 +12,8 @@ struct StarsAPIApp: App {
     var body: some Scene {
         WindowGroup {
             Rating(value: .constant(3))
-                .ratingStyle(ColoredBorderRatingStyle(color: .blue))
-                .ratingStyle(ColoredBorderRatingStyle(color: .red))
+//                .ratingStyle(ColoredBorderRatingStyle(color: .blue))
+//                .ratingStyle(ColoredBorderRatingStyle(color: .red))
                 .ratingStyle(.circle)
         }
     }

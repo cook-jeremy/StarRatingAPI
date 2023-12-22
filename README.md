@@ -6,13 +6,11 @@ This proposal introduces an API in the SwiftUI framework for a new Star Rating v
 <img width="133" alt="Screenshot 2023-12-07 at 11 02 58 PM" src="https://github.com/cook-jeremy/StarRatingAPI/assets/12803067/ae6806b4-7bd9-4196-a8d6-450aab83ad6a">
 
 ## Detailed Design
-There's an important dichotomy in star rating views: interactive and non-interactive. Interactive star rating UIs typically provide the user the choice of selecting in integer or half-integer star increments, instead of a continuous range, because one can't easily or accurately submit a precise floating point rating on most platforms. For non-interactive star ratings, the view can display a floating point rating to some specified precision (e.g. one decimal place). These non-interactive star rating views typically show the average of many ratings. We'd like to accommodate to both of these typical use cases with one view: `Rating`. The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars.
+There's an important dichotomy in star ratings UIs: interactive vs. non-interactive. Interactive star rating UIs typically provide the user with the choice of selecting a rating in integer or half-integer star increments, instead of a continuous range, because one can't easily or accurately submit a precise floating point rating on most platforms. For non-interactive star ratings, the view can display a floating point rating to some specified precision (e.g. one decimal place). Non-interactive star rating UIs typically show the average of many ratings. We'd like to accommodate to both of these typical use cases with one view: `Rating`. The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars.
 
 The `Rating` View has only one required parameter: a binding to a type which conforms to `BinaryFloatingPoint`, representing the rating. It also offers several optional customization parameters, each with a default value:
 - **Spacing:** The spacing between stars. The default spacing is that of `HStack`.
 - **Count:** The number of stars, defaults to 5.
-
-TODO:
 - **Precision:** The increment precision between ratings. A value of 1 indicates integer ratings, 0.5 indicates half-integer ratings, etc. The default value is 1.
 
 The initializer for the `Rating` View is structured as follows:
@@ -20,28 +18,26 @@ The initializer for the `Rating` View is structured as follows:
 public struct Rating<Value: BinaryFloatingPoint>: View {
     public init(
         value: Binding<Value>,
+        precision: Value? = nil,
         spacing: CGFloat? = nil,
         count: Int = 5
     )
 }
 ```
 
-Aligning with the design philosophy of SwiftUI of separating functional and stylistic code, we introduce a `RatingStyle` protocol to customize the `Rating` view. To customize the `Rating` View, create a type conforming to the `RatingStyle` protocol:
+Aligning with the design philosophy of SwiftUI of separating functional and stylistic code, we introduce a `RatingStyle` protocol along with a `RatingStyleConfiguration` to customize a `Rating` view:
 ```swift
 public protocol RatingStyle {
     @ViewBuilder func makeBody<Value: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<Value>) -> AnyView
 }
-```
 
-The `RatingStyleConfiguration` is defined as:
-```swift
 public struct RatingStyleConfiguration<Value: BinaryFloatingPoint> {
     @Binding public var value: Value { get nonmutating set }
     public var count: Int
     public var spacing: CGFloat
 }
 ```
-To define a custom rating style, create a type which conforms to `RatingStyle` by implementing the `makeBody(configuration:)` method. This method is responsible for generating the view for *all* the stars in the `Rating` View. Utilize the `configuration` parameter—a `RatingStyleConfiguration` instance—to access the rating's value, star count, and spacing. The implementation should return a view which has the appearance and behavior of all of the stars in the rating view.
+To define a custom rating style, create a type which conforms to `RatingStyle` by implementing the `makeBody(configuration:)` method. This method is responsible for generating the view for *all* the stars in the `Rating` View. Utilize the `configuration` parameter—a `RatingStyleConfiguration` instance—to access the rating's value, star count, and spacing. The implementation should return a view which has the appearance and behavior of all of the stars in the rating view. The return type of `makeBody(configuration:)` is `AnyView`, because 
 
 For example, here's how to create a `CircleRatingStyle`, which uses circles instead of stars:
 ```swift
@@ -121,8 +117,6 @@ Therefore, although the `@ViewBuilder` approach provides a straightforward metho
 
 ### Alternative 2
 For ease of use, we considered a `RatingStyle` who's `makeBody(configuration:)` creates the appearance and behavior of of *each* star, instead of all stars. The advantage of such a configuration allows for easier creation of styles which are symmetric for each star.
-
-
 ### Alternative 3
 Given there are over 2,000 SF Symbols which have a `.fill` counterpart (like `star` and `star.fill`), we offer an API to easily create a custom `RatingStyle`  using system images:
 ```swift
@@ -151,4 +145,4 @@ protocol RatingStyle {
     @ViewBuilder func makeBody(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>) -> Body 
 }
 ```
-This protocol compiles fine, however, it's impossible to create a type which conforms to this protocol. Associated type inference can only infer an opaque result type for a non-generic requirement, because the opaque type is parameterized by the function's own generic arguments. So we either need to type erase `RatingStyleConfiguration` over `Value`, or erase `some View` to `AnyView`.
+This protocol compiles fine, however, it's impossible to create a type which conforms to this protocol. Associated type inference can only infer an opaque result type for a non-generic requirement, because the opaque type is parameterized by the function's own generic arguments. So we either need to type erase `RatingStyleConfiguration` over `Value`, or erase `some View` to `AnyView`. The simpler of the two options is to use `AnyView`.
