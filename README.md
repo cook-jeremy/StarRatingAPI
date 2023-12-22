@@ -128,8 +128,8 @@ struct SystemImageRatingStyle: RatingStyle {
 ```
 However, this creates a dependency on SF Symbols just for the convenience of implementing a simple rating, which is not worth the trade-off.
 
-# Issues
-A rating style should be agnostic to the specific underlying types of `Value` which are used by `Rating<Value>` in the view hierarchy. For example, the following should apply the style regardless of `Float` or `Double`:
+# Open Questions
+Should a rating style be agnostic to a rating's concrete value type? For example, should the following apply the `CircleRatingStyle` to each `Rating` regardless of `Float` or `Double`?
 ```swift
 VStack {
     Rating(value: .constant(Float(3.2)))
@@ -137,6 +137,16 @@ VStack {
 }
 .ratingStyle(CircleRatingStyle())
 ```
+Or should a rating style only apply to a specific rating value type? For example:
+```swift
+VStack {
+    Rating(value: .constant(Float(3.2)))
+    Rating(value: .constant(Double(4.6)))
+}
+.ratingStyle(CircleRatingStyle<Float>())
+.ratingStyle(StarRatingStyle<Double>())
+```
+This question boils down to whether a rating style should be allowed to return a different type of `View` depending on the type of `Value` used in `Rating`.
 
 To support this, the `RatingStyle` protocol needs to use an opaque type for the value of the `RatingStyleConfiguration`: 
 ```swift
@@ -145,4 +155,20 @@ protocol RatingStyle {
     @ViewBuilder func makeBody(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>) -> Body 
 }
 ```
-This protocol compiles fine, however, it's impossible to create a type which conforms to this protocol. Associated type inference can only infer an opaque result type for a non-generic requirement, because the opaque type is parameterized by the function's own generic arguments. So we either need to type erase `RatingStyleConfiguration` over `Value`, or erase `some View` to `AnyView`. The simpler of the two options is to use `AnyView`.
+This protocol compiles fine, however, it's impossible to create a concrete type which conforms to this protocol. Associated type inference can only infer an opaque result type for a non-generic requirement, because the opaque type is parameterized by the function's own generic arguments. For example, consider:
+```swift
+protocol P {
+	associatedtype A: P
+	func make<T: P>(x: T) -> A
+}
+
+struct Maker: P {
+	func make<T: P>(x: T) -> some P {
+		return x
+	}
+}
+```
+There is no single underlying type to infer `A` (the return type of `make`), because it depends on the generic parameter `T` which is allowed to change with the caller. In our case, it seems likely that the return type `some View` of `makeBody` will be independent of the type of the `Value` used in `RatingStyleConfiguration`. The style of the rating is independent of the type `Float` or `Double` used for the rating value. 
+
+
+So we either need to type erase `RatingStyleConfiguration` over `Value`, or erase `some View` to `AnyView`. The simpler of the two options is to use `AnyView`.
