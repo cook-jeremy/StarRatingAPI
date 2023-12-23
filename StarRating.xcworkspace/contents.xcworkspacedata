@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:Star Rating Implementation/StarsAPI.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:StarRating/StarRating.xcodeproj">
+   </FileRef>
+</Workspace>

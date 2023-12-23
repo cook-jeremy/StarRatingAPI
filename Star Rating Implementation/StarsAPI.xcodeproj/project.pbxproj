@@ -10,11 +10,24 @@
 		8027DD242B22217E00A271FE /* StarsAPIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8027DD232B22217E00A271FE /* StarsAPIApp.swift */; };
 		8027DD282B22217F00A271FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8027DD272B22217F00A271FE /* Assets.xcassets */; };
 		8027DD2B2B22217F00A271FE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8027DD2A2B22217F00A271FE /* Preview Assets.xcassets */; };
-		8027DD332B2221D500A271FE /* Rating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8027DD322B2221D500A271FE /* Rating.swift */; };
-		80A001FA2B35BB6800798825 /* TypeErasedBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A001F92B35BB6800798825 /* TypeErasedBinding.swift */; };
-		80A001FC2B35C75000798825 /* SomeViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A001FB2B35C75000798825 /* SomeViewProtocol.swift */; };
-		80E6F5A32B2DE4A900D87B56 /* FloatingPointSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E6F5A22B2DE4A900D87B56 /* FloatingPointSquare.swift */; };
+		80A0024B2B373BE100798825 /* StarRating.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80A0024A2B373BE100798825 /* StarRating.framework */; };
+		80A0024C2B373BE100798825 /* StarRating.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 80A0024A2B373BE100798825 /* StarRating.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		80A002532B373CEC00798825 /* RatingDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A002522B373CEC00798825 /* RatingDemo.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		80A0024D2B373BE100798825 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				80A0024C2B373BE100798825 /* StarRating.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		8027DD202B22217E00A271FE /* StarsAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StarsAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -22,10 +35,8 @@
 		8027DD272B22217F00A271FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8027DD2A2B22217F00A271FE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8027DD2C2B22217F00A271FE /* StarsAPI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StarsAPI.entitlements; sourceTree = "<group>"; };
-		8027DD322B2221D500A271FE /* Rating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rating.swift; sourceTree = "<group>"; };
-		80A001F92B35BB6800798825 /* TypeErasedBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeErasedBinding.swift; sourceTree = "<group>"; };
-		80A001FB2B35C75000798825 /* SomeViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SomeViewProtocol.swift; sourceTree = "<group>"; };
-		80E6F5A22B2DE4A900D87B56 /* FloatingPointSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPointSquare.swift; sourceTree = "<group>"; };
+		80A0024A2B373BE100798825 /* StarRating.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StarRating.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80A002522B373CEC00798825 /* RatingDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingDemo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80A0024B2B373BE100798825 /* StarRating.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,9 +54,9 @@
 		8027DD172B22217E00A271FE = {
 			isa = PBXGroup;
 			children = (
-				80A001FB2B35C75000798825 /* SomeViewProtocol.swift */,
 				8027DD222B22217E00A271FE /* StarsAPI */,
 				8027DD212B22217E00A271FE /* Products */,
+				80A002492B373BE100798825 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -60,9 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				8027DD232B22217E00A271FE /* StarsAPIApp.swift */,
-				8027DD322B2221D500A271FE /* Rating.swift */,
-				80A001F92B35BB6800798825 /* TypeErasedBinding.swift */,
-				80E6F5A22B2DE4A900D87B56 /* FloatingPointSquare.swift */,
+				80A002522B373CEC00798825 /* RatingDemo.swift */,
 				8027DD272B22217F00A271FE /* Assets.xcassets */,
 				8027DD2C2B22217F00A271FE /* StarsAPI.entitlements */,
 				8027DD292B22217F00A271FE /* Preview Content */,
@@ -78,6 +88,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		80A002492B373BE100798825 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				80A0024A2B373BE100798825 /* StarRating.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -88,6 +106,7 @@
 				8027DD1C2B22217E00A271FE /* Sources */,
 				8027DD1D2B22217E00A271FE /* Frameworks */,
 				8027DD1E2B22217E00A271FE /* Resources */,
+				80A0024D2B373BE100798825 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -149,10 +168,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8027DD242B22217E00A271FE /* StarsAPIApp.swift in Sources */,
-				80E6F5A32B2DE4A900D87B56 /* FloatingPointSquare.swift in Sources */,
-				8027DD332B2221D500A271FE /* Rating.swift in Sources */,
-				80A001FC2B35C75000798825 /* SomeViewProtocol.swift in Sources */,
-				80A001FA2B35BB6800798825 /* TypeErasedBinding.swift in Sources */,
+				80A002532B373CEC00798825 /* RatingDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
