@@ -63,8 +63,6 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     @State private var starWidth: CGFloat = 0
     @State private var totalWidth: CGFloat = 0
     
-    private var index: Int?
-    
     var drag: some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
@@ -94,23 +92,17 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     }
     
     public var body: some View {
-        if configuration.styleRecursionLevel == 0 {
-            HStack(spacing: spacing) {
-                ForEach(0 ..< count, id: \.self) { i in
-                    AnyView(
-                        style.makeStar(configuration: configuration, index: i)
-                    )
-                    ._measureWidth($starWidth)
-                }
+        HStack(spacing: spacing) {
+            ForEach(0 ..< count, id: \.self) { i in
+                AnyView(
+                    style.makeStar(configuration: configuration, index: i)
+                )
+                ._measureWidth($starWidth)
             }
-            .contentShape(Rectangle())
-            .gesture(drag)
-            ._measureWidth($totalWidth)
-        } else {
-            AnyView(
-                style.makeStar(configuration: configuration, index: index ?? 0)
-            )
         }
+        .contentShape(Rectangle())
+        .gesture(drag)
+        ._measureWidth($totalWidth)
     }
 }
 
@@ -124,16 +116,6 @@ extension View {
                     }
             }
         )
-    }
-}
-
-extension Rating {
-    public init(_ configuration: RatingStyleConfiguration<V>, index: Int) {
-        self.configuration = configuration
-        self.configuration.styleRecursionLevel += 1
-        self.spacing = configuration.spacing
-        self.count = configuration.count
-        self.index = index
     }
 }
 

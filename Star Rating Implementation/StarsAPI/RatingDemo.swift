@@ -69,7 +69,7 @@ struct RatingDemo: View {
 //            .ratingStyle(.vertical)
 //        
 //        Rating(value: $value, count: 6) {
-//            RatingStar()
+//            StarShapeView()
 //                .shadow(radius: 3)
 //        }
     }
