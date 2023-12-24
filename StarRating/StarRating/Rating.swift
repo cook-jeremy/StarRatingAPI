@@ -8,18 +8,7 @@ import SwiftUI
 
 public struct RatingStyleConfiguration<V: BinaryFloatingPoint> {
     @Binding public var value: V
-    
-//    var index: Int
-//    
-//    var fillPercent: V {
-//        value - V(index)
-//    }
-//    
-//    var isFilled: Bool {
-//        value > V(index)
-//    }
-    
-    public let spacing: CGFloat
+    public let spacing: CGFloat?
     public let count: Int
     
     internal var styleLevel: Int = 1
@@ -69,22 +58,27 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     private var configuration: RatingStyleConfiguration<V>
     
     private var count: Int
-    private var spacing: CGFloat
+    private var spacing: CGFloat?
     
     @State private var starWidth: CGFloat = 0
+    @State private var totalWidth: CGFloat = 0
+    
+    private var index: Int?
     
     var drag: some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
                 let xPos = value.location.x
-                let realValue = (xPos / (starWidth + spacing)) + 1
+                let realSpacing = self.spacing ?? (totalWidth - starWidth * CGFloat(count)) / CGFloat(count - 1)
+                let realValue = (xPos / (starWidth + realSpacing)) + 1
+//                self.configuration.value = V(realValue)
                 self.configuration.value = V(max(1, realValue))
             }
     }
     
     public init(
         value: Binding<V>,
-        spacing: CGFloat = 10,
+        spacing: CGFloat? = nil,
         count: Int = 5
     ) {
         precondition(count >= 0)
@@ -98,32 +92,51 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     }
     
     public var body: some View {
-        HStack(spacing: spacing) {
-            ForEach(0 ..< count, id: \.self) { i in
-                let style = ratingStyles[ratingStyles.count - configuration.styleLevel]
-                AnyView(
-                    style.makeStar(configuration: configuration, index: i)
-                )
-                .overlay(
-                    GeometryReader { geo in
-                        Color.clear
-                            .onAppear {
-                                starWidth = geo.size.width
-                            }
+        if configuration.styleLevel == 1 {
+            VStack {
+                Text("total width: \(totalWidth)")
+                HStack(spacing: spacing) {
+                    ForEach(0 ..< count, id: \.self) { i in
+                        let style = ratingStyles[ratingStyles.count - configuration.styleLevel]
+                        AnyView(
+                            style.makeStar(configuration: configuration, index: i)
+                        )
+                        .measureWidth($starWidth)
                     }
-                )
+                }
+                .contentShape(Rectangle())
+                .gesture(drag)
+                .measureWidth($totalWidth)
             }
+        } else {
+            let style = ratingStyles[ratingStyles.count - configuration.styleLevel]
+            AnyView(
+                style.makeStar(configuration: configuration, index: index ?? 3)
+            )
         }
-        .gesture(drag)
+    }
+}
+
+extension View {
+    func measureWidth(_ width: Binding<CGFloat>) -> some View {
+        overlay(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear {
+                        width.wrappedValue = geo.size.width
+                    }
+            }
+        )
     }
 }
 
 extension Rating {
-    public init(_ configuration: RatingStyleConfiguration<V>) {
+    public init(_ configuration: RatingStyleConfiguration<V>, index: Int) {
         self.configuration = configuration
         self.configuration.styleLevel += 1
         self.spacing = configuration.spacing
         self.count = configuration.count
+        self.index = index
     }
 }
 
