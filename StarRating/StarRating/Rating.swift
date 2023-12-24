@@ -7,36 +7,38 @@
 import SwiftUI
 
 public struct RatingStyleConfiguration<V: BinaryFloatingPoint> {
-    @Binding var value: V
+    @Binding public var value: V
     
-    var spacing: CGFloat?
-    var count: Int
-    var styleLevel: Int = 1
+//    var index: Int
+//    
+//    var fillPercent: V {
+//        value - V(index)
+//    }
+//    
+//    var isFilled: Bool {
+//        value > V(index)
+//    }
+    
+    public let spacing: CGFloat
+    public let count: Int
+    
+    internal var styleLevel: Int = 1
 }
 
 public protocol RatingStyle {
-    @ViewBuilder func makeBody(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>) -> any View
+    @ViewBuilder func makeStar(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, index: Int) -> any View
 }
 
-public struct SystemImageRatingStyle: RatingStyle {
-    public var systemImage: String
-    
+public struct StarRatingStyle: RatingStyle {
     @ViewBuilder
-    public func makeBody<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>) -> any View {
-        HStack(spacing: configuration.spacing) {
-            ForEach(0 ..< configuration.count, id: \.self) { i in
-                let isFilled = i < Int(configuration.value)
-                Image(systemName: isFilled ? "\(systemImage).fill" : systemImage)
-                    .onTapGesture {
-                        configuration.value = V(i + 1)
-                    }
-            }
-        }
+    public func makeStar(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, index: Int) -> any View {
+        let isFilled = Int(configuration.value) > index
+        Image(systemName: isFilled ? "star.fill" : "star")
     }
 }
 
 struct RatingStylesEnvironmentKey: EnvironmentKey {
-    static let defaultValue: [any RatingStyle] = [SystemImageRatingStyle(systemImage: "star")]
+    static let defaultValue: [any RatingStyle] = [StarRatingStyle()]
 }
 
 extension EnvironmentValues {
@@ -66,9 +68,23 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     
     private var configuration: RatingStyleConfiguration<V>
     
+    private var count: Int
+    private var spacing: CGFloat
+    
+    @State private var starWidth: CGFloat = 0
+    
+    var drag: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                let xPos = value.location.x
+                let realValue = (xPos / (starWidth + spacing)) + 1
+                self.configuration.value = V(max(1, realValue))
+            }
+    }
+    
     public init(
         value: Binding<V>,
-        spacing: CGFloat? = nil,
+        spacing: CGFloat = 10,
         count: Int = 5
     ) {
         precondition(count >= 0)
@@ -77,12 +93,28 @@ public struct Rating<V: BinaryFloatingPoint>: View {
             spacing: spacing,
             count: count
         )
+        self.spacing = spacing
+        self.count = count
     }
     
     public var body: some View {
-        let styleIndex = ratingStyles.count - configuration.styleLevel
-        let style = ratingStyles[styleIndex]
-        AnyView(style.makeBody(configuration: configuration))
+        HStack(spacing: spacing) {
+            ForEach(0 ..< count, id: \.self) { i in
+                let style = ratingStyles[ratingStyles.count - configuration.styleLevel]
+                AnyView(
+                    style.makeStar(configuration: configuration, index: i)
+                )
+                .overlay(
+                    GeometryReader { geo in
+                        Color.clear
+                            .onAppear {
+                                starWidth = geo.size.width
+                            }
+                    }
+                )
+            }
+        }
+        .gesture(drag)
     }
 }
 
@@ -90,15 +122,17 @@ extension Rating {
     public init(_ configuration: RatingStyleConfiguration<V>) {
         self.configuration = configuration
         self.configuration.styleLevel += 1
+        self.spacing = configuration.spacing
+        self.count = configuration.count
     }
 }
 
-extension RatingStyle where Self == SystemImageRatingStyle {
-    public static var star: SystemImageRatingStyle {
-        SystemImageRatingStyle(systemImage: "star")
-    }
-
-    public static var circle: SystemImageRatingStyle {
-        SystemImageRatingStyle(systemImage: "circle")
-    }
-}
+//extension RatingStyle where Self == SystemImageRatingStyle {
+//    public static var star: SystemImageRatingStyle {
+//        SystemImageRatingStyle(systemImage: "star")
+//    }
+//
+//    public static var circle: SystemImageRatingStyle {
+//        SystemImageRatingStyle(systemImage: "circle")
+//    }
+//}

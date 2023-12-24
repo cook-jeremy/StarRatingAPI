@@ -15,6 +15,7 @@
 		80A002512B373C3F00798825 /* FloatingPointSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A002502B373C3F00798825 /* FloatingPointSquare.swift */; };
 		80A002552B373DD500798825 /* RatingAnyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A002542B373DD500798825 /* RatingAnyView.swift */; };
 		80A002572B37674E00798825 /* RatingStar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A002562B37674E00798825 /* RatingStar.swift */; };
+		80A0025D2B386DF300798825 /* Rating-12-24-23.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0025C2B386DF300798825 /* Rating-12-24-23.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +38,7 @@
 		80A002502B373C3F00798825 /* FloatingPointSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPointSquare.swift; sourceTree = "<group>"; };
 		80A002542B373DD500798825 /* RatingAnyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingAnyView.swift; sourceTree = "<group>"; };
 		80A002562B37674E00798825 /* RatingStar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingStar.swift; sourceTree = "<group>"; };
+		80A0025C2B386DF300798825 /* Rating-12-24-23.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rating-12-24-23.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				80A002472B373BC400798825 /* Rating.swift */,
+				80A0025C2B386DF300798825 /* Rating-12-24-23.swift */,
 				80A002562B37674E00798825 /* RatingStar.swift */,
 				80A0024E2B373C1000798825 /* RatingPreviews.swift */,
 				80A002502B373C3F00798825 /* FloatingPointSquare.swift */,
@@ -209,6 +212,7 @@
 				80A002482B373BC400798825 /* Rating.swift in Sources */,
 				80A0024F2B373C1000798825 /* RatingPreviews.swift in Sources */,
 				80A002322B373B7100798825 /* StarRating.docc in Sources */,
+				80A0025D2B386DF300798825 /* Rating-12-24-23.swift in Sources */,
 				80A002572B37674E00798825 /* RatingStar.swift in Sources */,
 				80A002512B373C3F00798825 /* FloatingPointSquare.swift in Sources */,
 			);
