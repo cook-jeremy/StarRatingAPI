@@ -11,7 +11,7 @@ public struct RatingStyleConfiguration<V: BinaryFloatingPoint> {
     public let spacing: CGFloat?
     public let count: Int
     
-    internal var styleLevel: Int = 1
+    internal var styleRecursionLevel: Int = 0
 }
 
 public protocol RatingStyle {
@@ -68,11 +68,9 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     var drag: some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
-                let xPos = value.location.x
-                let realSpacing = self.spacing ?? (totalWidth - starWidth * CGFloat(count)) / CGFloat(count - 1)
-                let realValue = (xPos / (starWidth + realSpacing)) + 1
-//                self.configuration.value = V(realValue)
-                self.configuration.value = V(max(1, realValue))
+                let spacing = self.spacing ?? (totalWidth - starWidth * CGFloat(count)) / CGFloat(count - 1)
+                let _value = (value.location.x / (starWidth + spacing)) + 1
+                self.configuration.value = V(max(1, _value))
             }
     }
     
@@ -91,34 +89,33 @@ public struct Rating<V: BinaryFloatingPoint>: View {
         self.count = count
     }
     
+    private var style: any RatingStyle {
+        ratingStyles[ratingStyles.count - configuration.styleRecursionLevel - 1]
+    }
+    
     public var body: some View {
-        if configuration.styleLevel == 1 {
-            VStack {
-                Text("total width: \(totalWidth)")
-                HStack(spacing: spacing) {
-                    ForEach(0 ..< count, id: \.self) { i in
-                        let style = ratingStyles[ratingStyles.count - configuration.styleLevel]
-                        AnyView(
-                            style.makeStar(configuration: configuration, index: i)
-                        )
-                        .measureWidth($starWidth)
-                    }
+        if configuration.styleRecursionLevel == 0 {
+            HStack(spacing: spacing) {
+                ForEach(0 ..< count, id: \.self) { i in
+                    AnyView(
+                        style.makeStar(configuration: configuration, index: i)
+                    )
+                    ._measureWidth($starWidth)
                 }
-                .contentShape(Rectangle())
-                .gesture(drag)
-                .measureWidth($totalWidth)
             }
+            .contentShape(Rectangle())
+            .gesture(drag)
+            ._measureWidth($totalWidth)
         } else {
-            let style = ratingStyles[ratingStyles.count - configuration.styleLevel]
             AnyView(
-                style.makeStar(configuration: configuration, index: index ?? 3)
+                style.makeStar(configuration: configuration, index: index ?? 0)
             )
         }
     }
 }
 
 extension View {
-    func measureWidth(_ width: Binding<CGFloat>) -> some View {
+    internal func _measureWidth(_ width: Binding<CGFloat>) -> some View {
         overlay(
             GeometryReader { geo in
                 Color.clear
@@ -133,7 +130,7 @@ extension View {
 extension Rating {
     public init(_ configuration: RatingStyleConfiguration<V>, index: Int) {
         self.configuration = configuration
-        self.configuration.styleLevel += 1
+        self.configuration.styleRecursionLevel += 1
         self.spacing = configuration.spacing
         self.count = configuration.count
         self.index = index

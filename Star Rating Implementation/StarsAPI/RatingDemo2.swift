@@ -19,11 +19,9 @@ struct CircleRatingStyle: RatingStyle {
 struct AddBorderRatingStyle: RatingStyle {
     func makeStar(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, index: Int) -> any View {
         Rating(configuration, index: index)
-//            .padding()
+            .padding()
             .border(.red)
     }
-    
-    
 }
 
 struct RatingDemo2: View {
@@ -31,7 +29,7 @@ struct RatingDemo2: View {
     @State private var value: Double = 0
     
     var body: some View {
-        Rating(value: $value, count: 15)
+        Rating(value: $value, count: 10)
             .ratingStyle(AddBorderRatingStyle())
             .ratingStyle(CircleRatingStyle())
     }
