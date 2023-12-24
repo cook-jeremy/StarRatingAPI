@@ -7,55 +7,6 @@
 
 import SwiftUI
 
-struct StarParameters {
-    struct Segment {
-        let line: CGPoint
-        let curve: CGPoint
-        let control: CGPoint
-    }
-
-    static let adjustment: CGFloat = 0.085
-
-    static let start = Segment(
-        line:    CGPoint(x: 0.50, y: 0.4),
-        curve:   CGPoint(x: 0.0, y: 0.0),
-        control: CGPoint(x: 0.0, y: 0.0)
-    )
-    
-    static let segments = [
-        Segment(
-            line:    CGPoint(x: 0.60, y: 0.05),
-            curve:   CGPoint(x: 0.40, y: 0.05),
-            control: CGPoint(x: 0.50, y: 0.00)
-        ),
-        Segment(
-            line:    CGPoint(x: 0.05, y: 0.20 + adjustment),
-            curve:   CGPoint(x: 0.00, y: 0.30 + adjustment),
-            control: CGPoint(x: 0.00, y: 0.25 + adjustment)
-        ),
-        Segment(
-            line:    CGPoint(x: 0.00, y: 0.70 - adjustment),
-            curve:   CGPoint(x: 0.05, y: 0.80 - adjustment),
-            control: CGPoint(x: 0.00, y: 0.75 - adjustment)
-        ),
-        Segment(
-            line:    CGPoint(x: 0.40, y: 0.95),
-            curve:   CGPoint(x: 0.60, y: 0.95),
-            control: CGPoint(x: 0.50, y: 1.00)
-        ),
-        Segment(
-            line:    CGPoint(x: 0.95, y: 0.80 - adjustment),
-            curve:   CGPoint(x: 1.00, y: 0.70 - adjustment),
-            control: CGPoint(x: 1.00, y: 0.75 - adjustment)
-        ),
-        Segment(
-            line:    CGPoint(x: 1.00, y: 0.30 + adjustment),
-            curve:   CGPoint(x: 0.95, y: 0.20 + adjustment),
-            control: CGPoint(x: 1.00, y: 0.25 + adjustment)
-        )
-    ]
-}
-
 struct Star: Shape {
     struct StarPoint {
         var center: CGPoint
@@ -78,7 +29,7 @@ struct Star: Shape {
     
     func path(in rect: CGRect) -> Path {
         Path { path in
-            var width: CGFloat = 780
+            let width: CGFloat = 780
             let height: CGFloat = 0.95513 * width
             
             let sp = StarPoint(center: CGPoint(x: 0.5, y: 0.549), width: width)
@@ -91,80 +42,45 @@ struct Star: Shape {
                 )
             )
             
-            path.addLine(
-                to: sp.point(r: 0.49, at: -23.25)
-            )
-            
-            path.addLine(
-                to: CGPoint(
-                    x: 0.64 * width,
-                    y: 0.347 * height
+            let outToInAngleOffset: CGFloat = 30.5
+            let tipAngleOffset: CGFloat = 11
+            var armStartAngle: CGFloat = -23.5
+            let bigArmLength: CGFloat = 0.485
+            let smallArmLength: CGFloat = 0.238
+            let angleOffset: CGFloat = 2.7
+            let curveRadius: CGFloat = 0.537
+            for _ in 0 ..< 5 {
+                path.addLine(
+                    to: sp.point(
+                        r: bigArmLength,
+                        at: armStartAngle
+                    )
                 )
-            )
-            
-            path.addLine(
-                to: CGPoint(
-                    x: 0.549 * width,
-                    y: 0.05 * height
+                
+                armStartAngle = armStartAngle - outToInAngleOffset
+                path.addLine(
+                    to: sp.point(
+                        r: smallArmLength,
+                        at: armStartAngle
+                    )
                 )
-            )
-            
-            let deltaWidth: CGFloat = 0.03
-            let deltaHeight: CGFloat = 0.015
-            path.addCurve(
-                to: CGPoint(
-                    x: 0.451 * width,
-                    y: 0.05 * height
-                ),
-                control1: CGPoint(
-                    x: (0.5 + deltaWidth) * width,
-                    y: (0.0 - deltaHeight) * height
-                ),
-                control2: CGPoint(
-                    x: (0.5 - deltaWidth) * width,
-                    y: (0.0 - deltaHeight)  * height
+                
+                armStartAngle = armStartAngle - outToInAngleOffset
+                path.addLine(
+                    to: sp.point(
+                        r: bigArmLength,
+                        at: armStartAngle
+                    )
                 )
-            )
-            
-            path.addLine(
-                to: CGPoint(
-                    x: 0.36 * width,
-                    y: 0.347 * height
+                
+                let midAngle = armStartAngle - tipAngleOffset / 2
+                armStartAngle = armStartAngle - tipAngleOffset
+                path.addCurve(
+                    to: sp.point(r: bigArmLength, at: armStartAngle),
+                    control1: sp.point(r: curveRadius, at: midAngle + angleOffset),
+                    control2: sp.point(r: curveRadius, at: midAngle - angleOffset)
                 )
-            )
-            
-            path.addLine(
-                to: CGPoint(
-                    x: 0.06 * width,
-                    y: 0.346 * height
-                )
-            )
-            
-            path.addLine(
-                to: CGPoint(
-                    x: 0.03 * width,
-                    y: 0.44 * height
-                )
-            )
-            
-            path.addLine(
-                to: CGPoint(
-                    x: 0.5 * width,
-                    y: 0.5 * height
-                )
-            )
-            
-            
-//            path.addLine(to: point(at: -90, in: rect))
-//            path.addQuadCurve(to: point(at: -90, in: rect), control: CGPoint(x: 200, y: -10))
-//            path.addLine(to: point(at: -162, in: rect))
-//            path.addLine(to: point(at: -234, in: rect))
-//            path.addLine(to: point(at: -306, in: rect))
-            
-//            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
-//            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-//            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-//            path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+            }
         }
     }
 }
