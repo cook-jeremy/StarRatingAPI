@@ -4,7 +4,6 @@
 //
 //  Created by Jeremy Cook on 12/7/23.
 //
-
 import SwiftUI
 
 public struct RatingStyleConfiguration<V: BinaryFloatingPoint> {

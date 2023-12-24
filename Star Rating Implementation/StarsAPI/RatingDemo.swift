@@ -16,6 +16,16 @@ struct RatingDemo: View {
             Rating(value: $value)
         }
         .padding()
+        
+//        Rating(value: $value)
+//            .ratingStarStyle(.shadowed)
+//            .ratingStarStyle(.circle)
+//            .ratingStyle(.vertical)
+//        
+//        Rating(value: $value, count: 6) {
+//            RatingStar()
+//                .shadow(radius: 3)
+//        }
     }
 }
 

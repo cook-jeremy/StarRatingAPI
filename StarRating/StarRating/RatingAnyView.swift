@@ -14,25 +14,25 @@
 //    var count: Int
 //    var styleLevel: Int = 1
 //    
-////    init<V: BinaryFloatingPoint>(value binding: Binding<V>, spacing: CGFloat? = nil, count: Int = 5) {
-////        self._value = Binding {
-////            binding.wrappedValue
-////        } set: { newValue in
-////            if let newValue = newValue as? V {
-////                binding.wrappedValue = newValue
-////            }
-////        }
-////        self.spacing = spacing
-////        self.count = count
-////    }
-////
-////    func setValue(to: some BinaryFloatingPoint) {
-////        _setValue(to: to, value: self.value)
-////    }
-////
-////    func _setValue<V: BinaryFloatingPoint>(to newValue: some BinaryFloatingPoint, value: V) {
-////        self.value = V(newValue)
-////    }
+//    init<V: BinaryFloatingPoint>(value binding: Binding<V>, spacing: CGFloat? = nil, count: Int = 5) {
+//        self._value = Binding {
+//            binding.wrappedValue
+//        } set: { newValue in
+//            if let newValue = newValue as? V {
+//                binding.wrappedValue = newValue
+//            }
+//        }
+//        self.spacing = spacing
+//        self.count = count
+//    }
+//
+//    func setValue(to: some BinaryFloatingPoint) {
+//        _setValue(to: to, value: self.value)
+//    }
+//
+//    func _setValue<V: BinaryFloatingPoint>(to newValue: some BinaryFloatingPoint, value: V) {
+//        self.value = V(newValue)
+//    }
 //}
 //
 //protocol RatingStyle {
@@ -43,9 +43,9 @@
 //struct SystemImageRatingStyle: RatingStyle {
 //    var systemImage: String
 //    
-////    func setValue<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration, value: V, newValue: Int) {
-////        configuration.value = V(newValue)
-////    }
+//    func setValue<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration, value: V, newValue: Int) {
+//        configuration.value = V(newValue)
+//    }
 //    
 //    @ViewBuilder
 //    func makeBody<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>) -> any View {

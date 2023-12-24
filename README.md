@@ -131,8 +131,10 @@ struct SystemImageRatingStyle: RatingStyle {
 ```
 However, this creates a dependency on SF Symbols just for the convenience of implementing a simple rating, which is not worth the trade-off.
 
+### Alternative 4
+
 # Type Erasure trade-off in `RatingStyle`
-In order for a rating's style to be agnostic to the type of its value, the `makeBody` of `RatingStyle` should be generic over the parameter `RatingStyleConfiguration<Value>`. Then to use the resulting `View`, we want to return an opaque type for `View`.
+In order for a rating's style to be agnostic to the type of its value, the `makeBody` of `RatingStyle` should be generic over the parameter `RatingStyleConfiguration<Value>`. To use the resulting `View`, we want to return an opaque type for `View`:
 ```swift
 protocol RatingStyle {
     associatedtype Body: View
@@ -152,16 +154,63 @@ struct Chef: Recipe {
 	}
 }
 ```
-There is no single underlying type to infer `Dish` because it depends on the generic parameter `Ingredient` which is allowed to change with the caller.
-
-In our case, it seems likely that the return type `some View` of `makeBody` will be independent of the type of the `Value` used in `RatingStyleConfiguration`. The style of the rating is independent of the type `Float` or `Double` used for the rating value. 
-
+There is no single underlying type to infer `Dish` because it depends on the generic parameter `Ingredient` which is allowed to change with the caller. The only way around it is to type erase the parameter or the return value.
 
 So we either need to type erase `RatingStyleConfiguration` over `Value`, or erase `some View` to `any View`.
 ## Erase `some View` to `any View`
-
+This is the simpler of the two solutions. Our protocol becomes:
+```swift
+protocol RatingStyle {
+    @ViewBuilder func makeBody<Value: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<Value>) -> any View 
+}
+```
+The cost of this is that view updates of `Rating` aren't as efficient because the type of our view hierarchy is erased.
 ## Erase `Value` in `RatingStyleConfiguration<Value>`
+This requires erasing over our binding to value in `RatingStyleConfiguration`:
+```swift
+struct RatingStyleConfiguration {
+    @Binding var value: any BinaryFloatingPoint
+    
+    init<V: BinaryFloatingPoint>(value binding: Binding<V>) {
+        self._value = Binding {
+            binding.wrappedValue
+        } set: { newValue in
+            if let newValue = newValue as? V {
+                binding.wrappedValue = newValue
+            }
+        }
+    }
+}
+```
+However, now it's difficult to read/write to this binding in a custom `RatingStyle`, because we don't have easy access to the concrete type of the value to type cast a new value. One solution is to defer assignment of value to a function which knows the concrete type:
+```swift
+struct CircleRatingStyle: RatingStyle {
+    var systemImage: String
 
+    @ViewBuilder
+    func makeBody(configuration: RatingStyleConfiguration) -> some View {
+        HStack(spacing: configuration.spacing) {
+            ForEach(0 ..< configuration.count, id: \.self) { i in
+                let isFilled = i < Int(configuration.value)
+                Image(systemName: isFilled ? "\(systemImage).fill" : systemImage)
+                    .onTapGesture {
+                        configuration.setValue(i + 1)
+                    }
+            }
+        }
+    }
+}
+
+extension RatingStyleConfiguration {
+    public func setValue(_ newValue: some BinaryFloatingPoint) {
+        _setValue(to: newValue, value: self.value)
+	}
+
+    func _setValue<V: BinaryFloatingPoint>(to newValue: some BinaryFloatingPoint, value: V) {
+        self.value = V(newValue)
+    }
+}
+```
 
 # Market Research
 Before diving into the design, we first explore the current space of star rating UIs to identify customization parameters that are important to developers.
@@ -193,4 +242,6 @@ Customization parameters:
 	- Label above rating
 	- Gradient across stars
 
-We'd like to accommodate to all of these typical use cases with one view: `Rating`, and two styles:
+# Useful Links
+
+https://forums.swift.org/t/type-erasing-in-swift-anyview-behind-the-scenes/27952/9
