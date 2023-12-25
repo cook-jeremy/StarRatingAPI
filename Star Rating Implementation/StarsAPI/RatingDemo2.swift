@@ -8,30 +8,31 @@
 import SwiftUI
 import StarRating
 
-struct CircleRatingStyle: RatingStyle {
-    func makeStar(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, index: Int) -> any View {
-        let isFilled = Int(configuration.value) > index
-        Image(systemName: isFilled ? "circle.fill" : "circle")
-            .foregroundStyle(.orange)
-    }
-}
-
-struct AddBorderRatingStyle: RatingStyle {
+struct ColoredBorderRatingStyle: RatingStyle {
+    var color: Color
     func makeStar(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, index: Int) -> any View {
         RatingStar(configuration, index: index)
-            .padding()
-            .border(.red)
+            .padding(3)
+            .border(color)
     }
 }
 
 struct RatingDemo2: View {
     
-    @State private var value: Double = 0
+    @State private var value: Double = 5
     
     var body: some View {
-        Rating(value: $value, count: 10)
-            .ratingStyle(AddBorderRatingStyle())
-            .ratingStyle(CircleRatingStyle())
+        VStack {
+            Rating(value: $value, count: 10)
+            
+            VStack {
+                Rating(value: $value, count: 10)
+            }
+//            .ratingStyle(ColoredBorderRatingStyle(color: .red))
+        }
+//        .ratingStyle(ColoredBorderRatingStyle(color: .blue))
+        .ratingStyle(.star)
+        .foregroundStyle(.orange)
     }
 }
 

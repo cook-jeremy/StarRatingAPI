@@ -7,32 +7,38 @@
 
 import SwiftUI
 
-struct Star: Shape {
-    struct StarPoint {
-        var center: CGPoint
-        var width: CGFloat
-        var height: CGFloat
-        init(center: CGPoint, width: CGFloat) {
-            self.center = center
-            self.width = width
-            self.height = 0.95513 * width
-        }
-        
-        func point(r: Double, at degrees: Double) -> CGPoint {
-            let angle: Double = Angle(degrees: degrees).radians
-            let realR = r * width
-            let offset = CGPoint(x: realR * cos(angle), y: realR * sin(angle))
-            let result = CGPoint(x: center.x * width + offset.x, y: center.y * height + offset.y)
-            return result
-        }
+struct StarPoint {
+    var center: CGPoint
+    var width: CGFloat
+    var height: CGFloat
+    var offsetX: CGFloat
+    var offsetY: CGFloat
+    init(center: CGPoint, rect: CGRect) {
+        self.center = center
+        let width: CGFloat = min(rect.width, rect.height * (1 / 0.95513))
+        let height: CGFloat = 0.95513 * width
+        self.offsetX = (rect.width - width) / 2
+        self.offsetY = (rect.height - height) / 2
+        self.width = width
+        self.height = height
     }
     
+    func point(r: Double, at degrees: Double) -> CGPoint {
+        let angle: Double = Angle(degrees: degrees).radians
+        let realR = r * width
+        let offset = CGPoint(x: realR * cos(angle), y: realR * sin(angle))
+        let result = CGPoint(x: center.x * width + offset.x + offsetX, y: center.y * height + offset.y + offsetY)
+        return result
+    }
+}
+
+struct Star: Shape {
     func path(in rect: CGRect) -> Path {
         Path { path in
-            let width: CGFloat = 780
+            let width: CGFloat = min(rect.width, rect.height * (1 / 0.95513))
             let height: CGFloat = 0.95513 * width
             
-            let sp = StarPoint(center: CGPoint(x: 0.5, y: 0.549), width: width)
+            let sp = StarPoint(center: CGPoint(x: 0.5, y: 0.549), rect: rect)
             
             // Center of star
             path.move(
@@ -85,75 +91,131 @@ struct Star: Shape {
     }
 }
 
-struct StarShapeView: View {
-    var body: some View {
-        ZStack {
-            Image(systemName: "star")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+struct StarCutout: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            let width: CGFloat = min(rect.width, rect.height * (1 / 0.95513))
+            let height: CGFloat = 0.95513 * width
             
-//            Image(systemName: "star")
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
-//                .rotationEffect(Angle(degrees: 36))
-//                .offset(x: 18, y: 21)
+            let sp = StarPoint(center: CGPoint(x: 0.5, y: 0.549), rect: rect)
             
-//            Rectangle()
-//                .frame(width: 783, height: 750)
-//                .foregroundStyle(.clear)
-//                .border(.blue)
-//                .frame(width: 800, alignment: .leading)
-//                .frame(height: 775, alignment: .top)
-//                .aspectRatio(1, contentMode: .fit)
+            // Center of star
+            path.move(
+                to: CGPoint(
+                    x: 0.5 * width,
+                    y: 0.549 * height
+                )
+            )
             
-            Star()
-                .fill(.blue.opacity(0.5))
-                .frame(width: 780, height: 745)
-//                .rotationEffect(Angle(degrees: 72), anchor: .init(x: 0.5, y: 0.549))
-                .border(.red)
-                .frame(width: 794, alignment: .leading)
-                .frame(height: 775, alignment: .top)
+            var armStartAngle: CGFloat = -18.4
+            let bigArmLength: CGFloat = 0.411
             
-//            Star()
-//                .fill(.blue.opacity(0.5))
-//                .frame(width: 780, height: 745)
-//                .rotationEffect(Angle(degrees: 144), anchor: .init(x: 0.5, y: 0.549))
-//                .border(.red)
-//                .frame(width: 794, alignment: .leading)
-//                .frame(height: 775, alignment: .top)
-//            
-//            Star()
-//                .fill(.blue.opacity(0.5))
-//                .frame(width: 780, height: 745)
-//                .rotationEffect(Angle(degrees: 216), anchor: .init(x: 0.5, y: 0.549))
-//                .border(.red)
-//                .frame(width: 794, alignment: .leading)
-//                .frame(height: 775, alignment: .top)
-//            
-//            Star()
-//                .fill(.blue.opacity(0.5))
-//                .frame(width: 780, height: 745)
-//                .rotationEffect(Angle(degrees: 288), anchor: .init(x: 0.5, y: 0.549))
-//                .border(.red)
-//                .frame(width: 794, alignment: .leading)
-//                .frame(height: 775, alignment: .top)
-//            
-//            Star()
-//                .fill(.blue.opacity(0.5))
-//                .frame(width: 780, height: 745)
-//                .rotationEffect(Angle(degrees: 0), anchor: .init(x: 0.5, y: 0.549))
-//                .border(.red)
-//                .frame(width: 794, alignment: .leading)
-//                .frame(height: 775, alignment: .top)
+            let smallArmLength: CGFloat = 0.171
+            let outToInAngleOffset: CGFloat = 28.2
             
+            let tipAngleOffset: CGFloat = 14.8
+            let angleOffset: CGFloat = 1.5
+            let curveRadius: CGFloat = 0.158
             
+            let tipAngleOffset2: CGFloat = 0.8
+            let angleOffset2: CGFloat = 0.02
+            let curveRadius2: CGFloat = 0.415
+            
+            for _ in 0 ..< 5 {
+                path.addLine(
+                    to: sp.point(
+                        r: bigArmLength,
+                        at: armStartAngle
+                    )
+                )
+                
+                armStartAngle = armStartAngle - outToInAngleOffset
+                path.addLine(
+                    to: sp.point(
+                        r: smallArmLength,
+                        at: armStartAngle
+                    )
+                )
+                
+                let midAngle = armStartAngle - tipAngleOffset / 2
+                armStartAngle = armStartAngle - tipAngleOffset
+                path.addCurve(
+                    to: sp.point(r: smallArmLength, at: armStartAngle),
+                    control1: sp.point(r: curveRadius, at: midAngle + angleOffset),
+                    control2: sp.point(r: curveRadius, at: midAngle - angleOffset)
+                )
+                
+                armStartAngle = armStartAngle - outToInAngleOffset
+                path.addLine(
+                    to: sp.point(
+                        r: bigArmLength,
+                        at: armStartAngle
+                    )
+                )
+                
+                let midAngle2 = armStartAngle - tipAngleOffset2 / 2
+                armStartAngle = armStartAngle - tipAngleOffset2
+                path.addCurve(
+                    to: sp.point(r: bigArmLength, at: armStartAngle),
+                    control1: sp.point(r: curveRadius2, at: midAngle2 + angleOffset2),
+                    control2: sp.point(r: curveRadius2, at: midAngle2 - angleOffset2)
+                )
+            }
         }
-        .frame(width: 800, height: 775)
-        .border(.green)
-        .padding()
+    }
+}
+
+struct StarMaskRectangle: Shape {
+    var percent: Double
+
+    func path(in rect: CGRect) -> Path {
+//        let totalWidth = rect.maxX - rect.minX
+        let percentIn = 0.105
+        let xIn = percentIn * rect.width
+        let xOut = (1 - percentIn) * rect.width
+        let newWidth = xOut - xIn
+        
+        let width = newWidth * CGFloat(percent)
+        return Rectangle().path(in: CGRect(x: xIn, y: rect.minY, width: width, height: rect.height))
+    }
+}
+
+public struct StarShapeView: View {
+    public var percent: CGFloat
+    
+    public init(percent: CGFloat) {
+        self.percent = percent
+    }
+    
+    public var body: some View {
+        Star()
+            .reverseMask({
+                StarCutout()
+                    .reverseMask {
+                        StarMaskRectangle(percent: percent)
+                    }
+            })
+            .border(.red)
+    }
+}
+
+extension View {
+    public dynamic func reverseMask<Mask: View>(
+        alignment: Alignment = .center,
+        @ViewBuilder _ mask: () -> Mask
+    ) -> some View {
+        self.mask {
+            Rectangle()
+                .overlay(alignment: alignment) {
+                    mask()
+                        .blendMode(.destinationOut)
+                }
+        }
     }
 }
 
 #Preview {
-    StarShapeView()
+    StarShapeView(percent: 0.3)
+        .frame(width: 200, height: 300)
 }
+

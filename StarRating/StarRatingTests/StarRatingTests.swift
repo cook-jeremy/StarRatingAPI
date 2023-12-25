@@ -7,30 +7,55 @@
 
 import XCTest
 @testable import StarRating
+import SwiftUI
 
 class StarRatingTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testTapLocation() throws {
+        let rating = Rating(value: .constant(3))
+        
+        var tapLocation = rating.location(5, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 0, remainder: 5 / 20))
+        XCTAssertEqual(tapLocation.value, 5 / 20)
+        
+        tapLocation = rating.location(20, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 0, remainder: 1))
+        XCTAssertEqual(tapLocation.value, 1)
+        
+        tapLocation = rating.location(21, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .spacer(index: 0))
+        XCTAssertEqual(tapLocation.value, 1)
+        
+        tapLocation = rating.location(29, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .spacer(index: 0))
+        XCTAssertEqual(tapLocation.value, 1)
+        
+        tapLocation = rating.location(30, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 1, remainder: 0))
+        XCTAssertEqual(tapLocation.value, 1)
+        
+        tapLocation = rating.location(35, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 1, remainder: 0.25))
+        XCTAssertEqual(tapLocation.value, 1 + 5/20)
+        
+        tapLocation = rating.location(51, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .spacer(index: 1))
+        XCTAssertEqual(tapLocation.value, 2)
+        
+        tapLocation = rating.location(60, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 2, remainder: 0))
+        XCTAssertEqual(tapLocation.value, 2)
+        
+        tapLocation = rating.location(120, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 4, remainder: 0))
+        XCTAssertEqual(tapLocation.value, 4)
+        
+        tapLocation = rating.location(140, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 4, remainder: 1))
+        XCTAssertEqual(tapLocation.value, 5)
+        
+        tapLocation = rating.location(200, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 4, remainder: 1))
+        XCTAssertEqual(tapLocation.value, 5)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }

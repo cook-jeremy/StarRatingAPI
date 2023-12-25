@@ -12,7 +12,7 @@ import StarRating
 struct StarsAPIApp: App {
     var body: some Scene {
         WindowGroup {
-            RatingDemo2()
+            RatingDemo3()
         }
     }
 }

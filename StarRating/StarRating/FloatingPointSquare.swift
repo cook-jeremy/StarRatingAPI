@@ -37,7 +37,7 @@ struct FloatingPointSquare: View {
         Rectangle()
             .foregroundStyle(.orange)
             .aspectRatio(1, contentMode: .fit)
-            .mask(MaskRectangle(percent: percent))
+//            .mask(MaskRectangle(percent: percent))
             .border(.black)
     }
 }
