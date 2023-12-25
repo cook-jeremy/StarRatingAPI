@@ -4,6 +4,7 @@
 This proposal introduces an API in the SwiftUI framework for a star rating view, called `Rating`.  The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars. The aim is to provide a consistent rating experience across all Apple platforms, while also providing ample customizability for individualized apps.
 
 <img width="133" alt="Screenshot 2023-12-07 at 11 02 58 PM" src="https://github.com/cook-jeremy/StarRatingAPI/assets/12803067/ae6806b4-7bd9-4196-a8d6-450aab83ad6a">
+
 ## Detailed Design
 The `Rating` View has only one required parameter: a binding to a type which conforms to `BinaryFloatingPoint`, representing the rating. It also offers several optional customization parameters, each with a default value:
 - **Spacing:** The spacing between stars. The default spacing is that of `HStack`.
