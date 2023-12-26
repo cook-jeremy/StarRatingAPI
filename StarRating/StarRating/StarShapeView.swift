@@ -169,14 +169,8 @@ struct StarMaskRectangle: Shape {
     var percent: Double
 
     func path(in rect: CGRect) -> Path {
-//        let totalWidth = rect.maxX - rect.minX
-        let percentIn = 0.105
-        let xIn = percentIn * rect.width
-        let xOut = (1 - percentIn) * rect.width
-        let newWidth = xOut - xIn
-        
-        let width = newWidth * CGFloat(percent)
-        return Rectangle().path(in: CGRect(x: xIn, y: rect.minY, width: width, height: rect.height))
+        let width = percent * rect.width
+        return Rectangle().path(in: CGRect(x: rect.minX, y: rect.minY, width: width, height: rect.height))
     }
 }
 
