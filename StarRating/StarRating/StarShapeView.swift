@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct StarPoint {
-    var unitCenter: CGPoint
-    
+    let heightToWidthRatio = 0.95513
+    let unitCenter: CGPoint = CGPoint(x: 0.5, y: 0.549)
     var center: CGPoint {
         CGPoint(
             x: unitCenter.x * width,
@@ -19,15 +19,16 @@ struct StarPoint {
     
     var width: CGFloat
     var height: CGFloat
-    var offsetX: CGFloat
-    var offsetY: CGFloat
     
-    init(center: CGPoint, rect: CGRect) {
-        self.unitCenter = center
-        let width: CGFloat = min(rect.width, rect.height * (1 / 0.95513))
-        let height: CGFloat = 0.95513 * width
-        self.offsetX = (rect.width - width) / 2
-        self.offsetY = (rect.height - height) / 2
+    var centerOffset: CGPoint
+    
+    init(rect: CGRect) {
+        let width: CGFloat = min(rect.width, rect.height * (1 / heightToWidthRatio))
+        let height: CGFloat = heightToWidthRatio * width
+        self.centerOffset = CGPoint(
+            x: (rect.width - width) / 2,
+            y: (rect.height - height) / 2
+        )
         self.width = width
         self.height = height
     }
@@ -36,7 +37,7 @@ struct StarPoint {
         let angle: Double = Angle(degrees: degrees).radians
         let realR = r * width
         let offset = CGPoint(x: realR * cos(angle), y: realR * sin(angle))
-        let result = CGPoint(x: unitCenter.x * width + offset.x + offsetX, y: unitCenter.y * height + offset.y + offsetY)
+        let result = CGPoint(x: center.x + offset.x + centerOffset.x, y: center.y + offset.y + centerOffset.y)
         return result
     }
 }
@@ -44,10 +45,7 @@ struct StarPoint {
 struct OuterStar: Shape {
     func path(in rect: CGRect) -> Path {
         Path { path in
-            let width: CGFloat = min(rect.width, rect.height * (1 / 0.95513))
-            let height: CGFloat = 0.95513 * width
-            
-            let sp = StarPoint(center: CGPoint(x: 0.5, y: 0.549), rect: rect)
+            let sp = StarPoint(rect: rect)
             
             // Center of star
             path.move(to: sp.center)
@@ -98,10 +96,7 @@ struct OuterStar: Shape {
 struct InnerStar: Shape {
     func path(in rect: CGRect) -> Path {
         Path { path in
-            let width: CGFloat = min(rect.width, rect.height * (1 / 0.95513))
-            let height: CGFloat = 0.95513 * width
-            
-            let sp = StarPoint(center: CGPoint(x: 0.5, y: 0.549), rect: rect)
+            let sp = StarPoint(rect: rect)
             
             // Center of star
             path.move(to: sp.center)
