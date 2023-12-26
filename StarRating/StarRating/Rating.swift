@@ -97,8 +97,8 @@ public struct Rating<V: BinaryFloatingPoint>: View {
         if remainder > starWidth && x < totalWidth {
             return .spacer(index: starAndSpacerIndex)
         } else {
-            let cappedIndex = min(count - 1, starAndSpacerIndex)
-            let cappedRemainder = x < totalWidth ? min(1, remainder / starWidth) : 1
+            let cappedIndex = max(0, min(count - 1, starAndSpacerIndex))
+            let cappedRemainder = x < totalWidth ? max(0, min(1, remainder / starWidth)) : 1
             return .star(index: cappedIndex, remainder: cappedRemainder)
         }
     }

@@ -57,5 +57,13 @@ class StarRatingTests: XCTestCase {
         tapLocation = rating.location(200, starWidth: 20, spacingWidth: 10)
         XCTAssertEqual(tapLocation, .star(index: 4, remainder: 1))
         XCTAssertEqual(tapLocation.value, 5)
+        
+        tapLocation = rating.location(-20, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 0, remainder: 0))
+        XCTAssertEqual(tapLocation.value, 0)
+        
+        tapLocation = rating.location(-100, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 0, remainder: 0))
+        XCTAssertEqual(tapLocation.value, 0)
     }
 }

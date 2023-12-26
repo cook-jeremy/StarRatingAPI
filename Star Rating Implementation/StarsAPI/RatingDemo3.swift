@@ -13,7 +13,7 @@ struct FloatingStarRatingStyle: RatingStyle {
         let percent = max(0, min(1, configuration.value - V(index)))
         VStack {
             Text("P: \(Double(percent))")
-            StarShapeView(percent: CGFloat(percent))
+            StarShapeView(percent: CGFloat(percent), outerStyle: .black)
                 .border(.red)
         }
     }
@@ -32,6 +32,6 @@ struct RatingDemo3: View {
 
 #Preview {
     RatingDemo3()
-        .frame(width: 500, height: 200)
+//        .frame(width: 200, height: 100)
         .padding()
 }
