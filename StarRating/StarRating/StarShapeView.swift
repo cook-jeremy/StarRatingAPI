@@ -8,13 +8,22 @@
 import SwiftUI
 
 struct StarPoint {
-    var center: CGPoint
+    var unitCenter: CGPoint
+    
+    var center: CGPoint {
+        CGPoint(
+            x: unitCenter.x * width,
+            y: unitCenter.y * height
+        )
+    }
+    
     var width: CGFloat
     var height: CGFloat
     var offsetX: CGFloat
     var offsetY: CGFloat
+    
     init(center: CGPoint, rect: CGRect) {
-        self.center = center
+        self.unitCenter = center
         let width: CGFloat = min(rect.width, rect.height * (1 / 0.95513))
         let height: CGFloat = 0.95513 * width
         self.offsetX = (rect.width - width) / 2
@@ -27,12 +36,12 @@ struct StarPoint {
         let angle: Double = Angle(degrees: degrees).radians
         let realR = r * width
         let offset = CGPoint(x: realR * cos(angle), y: realR * sin(angle))
-        let result = CGPoint(x: center.x * width + offset.x + offsetX, y: center.y * height + offset.y + offsetY)
+        let result = CGPoint(x: unitCenter.x * width + offset.x + offsetX, y: unitCenter.y * height + offset.y + offsetY)
         return result
     }
 }
 
-struct Star: Shape {
+struct OuterStar: Shape {
     func path(in rect: CGRect) -> Path {
         Path { path in
             let width: CGFloat = min(rect.width, rect.height * (1 / 0.95513))
@@ -41,12 +50,7 @@ struct Star: Shape {
             let sp = StarPoint(center: CGPoint(x: 0.5, y: 0.549), rect: rect)
             
             // Center of star
-            path.move(
-                to: CGPoint(
-                    x: 0.5 * width,
-                    y: 0.549 * height
-                )
-            )
+            path.move(to: sp.center)
             
             let outToInAngleOffset: CGFloat = 30.5
             let tipAngleOffset: CGFloat = 11
@@ -91,7 +95,7 @@ struct Star: Shape {
     }
 }
 
-struct StarCutout: Shape {
+struct InnerStar: Shape {
     func path(in rect: CGRect) -> Path {
         Path { path in
             let width: CGFloat = min(rect.width, rect.height * (1 / 0.95513))
@@ -100,12 +104,7 @@ struct StarCutout: Shape {
             let sp = StarPoint(center: CGPoint(x: 0.5, y: 0.549), rect: rect)
             
             // Center of star
-            path.move(
-                to: CGPoint(
-                    x: 0.5 * width,
-                    y: 0.549 * height
-                )
-            )
+            path.move(to: sp.center)
             
             var armStartAngle: CGFloat = -18.4
             let bigArmLength: CGFloat = 0.411
@@ -165,51 +164,47 @@ struct StarCutout: Shape {
     }
 }
 
-struct StarMaskRectangle: Shape {
+struct PartialHorizontalRectangle: Shape {
     var percent: Double
-
     func path(in rect: CGRect) -> Path {
         let width = percent * rect.width
         return Rectangle().path(in: CGRect(x: rect.minX, y: rect.minY, width: width, height: rect.height))
     }
 }
 
-public struct StarShapeView: View {
-    public var percent: CGFloat
+public struct StarShapeView<S1, S2>: View where S1: ShapeStyle, S2: ShapeStyle {
     
-    public init(percent: CGFloat) {
+    var percent: CGFloat
+    var outerStyle: S1
+    var innerStyle: S2
+    
+    public init(percent: CGFloat, outerStyle: S1 = .foreground, innerStyle: S2 = .foreground) {
         self.percent = percent
+        self.outerStyle = outerStyle
+        self.innerStyle = innerStyle
     }
     
     public var body: some View {
-        Star()
-            .reverseMask({
-                StarCutout()
-                    .reverseMask {
-                        StarMaskRectangle(percent: percent)
-                    }
-            })
-            .border(.red)
-    }
-}
-
-extension View {
-    public dynamic func reverseMask<Mask: View>(
-        alignment: Alignment = .center,
-        @ViewBuilder _ mask: () -> Mask
-    ) -> some View {
-        self.mask {
-            Rectangle()
-                .overlay(alignment: alignment) {
-                    mask()
-                        .blendMode(.destinationOut)
-                }
+        ZStack {
+            OuterStar()
+                .subtracting(
+                    InnerStar()
+                        .subtracting(PartialHorizontalRectangle(percent: percent))
+                )
+                .fill(innerStyle)
+            
+            OuterStar()
+                .subtracting(
+                    InnerStar()
+                )
+                .fill(outerStyle)
         }
     }
 }
 
 #Preview {
-    StarShapeView(percent: 0.3)
-        .frame(width: 200, height: 300)
+    StarShapeView(percent: 0.3, innerStyle: .orange)
+        .foregroundStyle(.gray)
+        .frame(width: 400, height: 400)
 }
 
