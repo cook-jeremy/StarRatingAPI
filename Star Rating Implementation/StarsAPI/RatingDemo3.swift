@@ -11,11 +11,8 @@ import StarRating
 struct FloatingStarRatingStyle: RatingStyle {
     func makeStar<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>, index: Int) -> any View {
         let percent = max(0, min(1, configuration.value - V(index)))
-        VStack {
-            Text("P: \(Double(percent))")
-            StarShapeView(percent: CGFloat(percent), outerStyle: .black)
-                .border(.red)
-        }
+        StarShapeView(percent: CGFloat(percent))
+            .foregroundStyle(.orange)
     }
 }
 
@@ -24,9 +21,8 @@ struct RatingDemo3: View {
     @State private var value: Double = 3
     
     var body: some View {
-        Rating(value: $value, precision: 0, spacing: 10, count: 5)
+        Rating(value: $value, precision: 0.5, spacing: 10, count: 5)
             .ratingStyle(FloatingStarRatingStyle())
-            .foregroundStyle(.orange)
     }
 }
 
