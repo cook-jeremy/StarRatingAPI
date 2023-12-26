@@ -24,7 +24,7 @@ struct RatingDemo3: View {
     @State private var value: Double = 3
     
     var body: some View {
-        Rating(value: $value, spacing: 10, count: 5)
+        Rating(value: $value, precision: 0, spacing: 10, count: 5)
             .ratingStyle(FloatingStarRatingStyle())
             .foregroundStyle(.orange)
     }
@@ -32,6 +32,5 @@ struct RatingDemo3: View {
 
 #Preview {
     RatingDemo3()
-//        .frame(width: 200, height: 100)
         .padding()
 }

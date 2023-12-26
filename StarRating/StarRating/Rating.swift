@@ -8,6 +8,7 @@ import SwiftUI
 
 public struct RatingStyleConfiguration<V: BinaryFloatingPoint> {
     @Binding public var value: V
+    public let precision: V
     public let spacing: CGFloat?
     public let count: Int
     internal var styleRecursionLevel: Int = 0
@@ -69,6 +70,7 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     
     private var count: Int
     private var spacing: CGFloat?
+    private var precision: V
     
     @State private var starWidth: CGFloat = 0
     @State private var totalWidth: CGFloat = 0
@@ -79,10 +81,15 @@ public struct Rating<V: BinaryFloatingPoint>: View {
         case star(index: Int, remainder: CGFloat)
         case spacer(index: Int)
         
-        internal var value: V {
+        internal func value(precision: V) -> V {
             switch self {
             case .star(let index, let remainder):
-                return V(index) + V(remainder)
+                if precision != 0 {
+                    let precisionIndex = Int(V(remainder) / precision)
+                    return V(index) + V(precisionIndex + 1) * precision
+                } else {
+                    return V(index) + V(remainder)
+                }
             case .spacer(let index):
                 return V(index + 1)
             }
@@ -110,22 +117,25 @@ public struct Rating<V: BinaryFloatingPoint>: View {
                 xPos = value.location.x
                 let spacingWidth = spacing ?? (totalWidth - starWidth * CGFloat(count)) / CGFloat(count - 1)
                 let tapLocation = location(value.location.x, starWidth: starWidth, spacingWidth: spacingWidth)
-                let value = tapLocation.value
+                let value = tapLocation.value(precision: precision)
                 configuration.value = value
             }
     }
     
     public init(
         value: Binding<V>,
+        precision: V = 1.0,
         spacing: CGFloat? = nil,
         count: Int = 5
     ) {
         precondition(count >= 0)
         self.configuration = .init(
             value: value,
+            precision: precision,
             spacing: spacing,
             count: count
         )
+        self.precision = precision
         self.spacing = spacing
         self.count = count
     }
