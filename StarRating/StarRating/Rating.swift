@@ -75,8 +75,6 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     @State private var starWidth: CGFloat = 0
     @State private var totalWidth: CGFloat = 0
     
-    @State private var xPos: CGFloat = 0
-    
     internal enum TapLocation: Equatable {
         case star(index: Int, remainder: CGFloat)
         case spacer(index: Int)
@@ -114,11 +112,9 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     var drag: some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
-                xPos = value.location.x
                 let spacingWidth = spacing ?? (totalWidth - starWidth * CGFloat(count)) / CGFloat(count - 1)
                 let tapLocation = location(value.location.x, starWidth: starWidth, spacingWidth: spacingWidth)
-                let value = tapLocation.value(precision: precision)
-                configuration.value = value
+                configuration.value = tapLocation.value(precision: precision)
             }
     }
     
@@ -145,23 +141,17 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     }
     
     public var body: some View {
-        VStack {
-            Text("value: \(Double(configuration.value))")
-            Text("starWidth: \(starWidth)")
-            Text("totalWidth: \(totalWidth)")
-            Text("xPos: \(xPos)")
-            HStack(spacing: spacing) {
-                ForEach(0 ..< count, id: \.self) { i in
-                    AnyView(
-                        style.makeStar(configuration: configuration, index: i)
-                    )
-                    ._measureWidth($starWidth)
-                }
+        HStack(spacing: spacing) {
+            ForEach(0 ..< count, id: \.self) { i in
+                AnyView(
+                    style.makeStar(configuration: configuration, index: i)
+                )
+                ._measureWidth($starWidth)
             }
-            .contentShape(Rectangle())
-            .gesture(drag)
-            ._measureWidth($totalWidth)
         }
+        .contentShape(Rectangle())
+        .gesture(drag)
+        ._measureWidth($totalWidth)
     }
 }
 
