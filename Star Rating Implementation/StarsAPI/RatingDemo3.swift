@@ -16,13 +16,36 @@ struct FloatingStarRatingStyle: RatingStyle {
     }
 }
 
+struct HalfStarRatingStyle: RatingStyle {
+    func makeStar<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>, index: Int) -> any View {
+        let starIndex = Double(index + 1)
+        Group {
+            if configuration.value >= V(starIndex) {
+                Image(systemName: "star.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else if configuration.value + 0.5 >= V(starIndex) {
+                Image(systemName: "star.leadinghalf.filled")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                Image(systemName: "star")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            }
+        }
+        .foregroundStyle(.orange)
+    }
+}
+
 struct RatingDemo3: View {
     
     @State private var value: Double = 3
     
     var body: some View {
         Rating(value: $value, precision: 0.5, spacing: 10, count: 5)
-            .ratingStyle(FloatingStarRatingStyle())
+            .ratingStyle(HalfStarRatingStyle())
+//            .ratingStyle(FloatingStarRatingStyle())
     }
 }
 

@@ -8,7 +8,6 @@ import SwiftUI
 
 public struct RatingStyleConfiguration<V: BinaryFloatingPoint> {
     @Binding public var value: V
-    public let precision: V
     public let spacing: CGFloat?
     public let count: Int
     internal var styleRecursionLevel: Int = 0
@@ -120,14 +119,13 @@ public struct Rating<V: BinaryFloatingPoint>: View {
     
     public init(
         value: Binding<V>,
-        precision: V = 1.0,
+        precision: V = 1,
         spacing: CGFloat? = nil,
         count: Int = 5
     ) {
         precondition(count >= 0)
         self.configuration = .init(
             value: value,
-            precision: precision,
             spacing: spacing,
             count: count
         )

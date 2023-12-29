@@ -1,35 +1,75 @@
 # Star Rating API Proposal
 
 ## Introduction
-This proposal introduces an API in the SwiftUI framework for a star rating view, called `Rating`.  The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars. The aim is to provide a consistent rating experience across all Apple platforms, while also providing ample customizability for individualized apps.
+This proposal introduces an API in the SwiftUI framework for a star rating view called `Rating`.  The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars. The aim is to provide a consistent rating experience across all Apple platforms, while also providing customizability for individualized apps.
 
 <img width="133" alt="Screenshot 2023-12-07 at 11 02 58 PM" src="https://github.com/cook-jeremy/StarRatingAPI/assets/12803067/ae6806b4-7bd9-4196-a8d6-450aab83ad6a">
 
 ## Detailed Design
-The `Rating` View has only one required parameter: a binding to a type which conforms to `BinaryFloatingPoint`, representing the rating. It also offers several optional customization parameters, each with a default value:
+`Rating` has only one required parameter: a binding to the value of the rating, which must conform to `BinaryFloatingPoint`. There rest of the parameters customize the wholistic features of a `Rating`, and have a default value each:
+- **Precision:** The increment precision for each star. For example, a precision of 1 indicates integer star ratings, and 0.5 indicates half-integer star ratings. A precision of 0 indicates the maximum precision of the type specified for the rating value. The default precision is 1.
 - **Spacing:** The spacing between stars. The default spacing is that of `HStack`.
-- **Count:** The number of stars, defaults to 5.
-- **Precision:** The increment precision between ratings. A value of 1 indicates integer ratings, 0.5 indicates half-integer ratings, etc. The default value is 1.
+- **Count:** The number of stars. The default is 5.
 
-The initializer for `Rating` is structured as follows:
+The API initializer for `Rating` is:
 ```swift
 public struct Rating<Value: BinaryFloatingPoint>: View {
-    public init(
+	public init(
         value: Binding<Value>,
-        precision: Value? = nil,
+        precision: Value = 1,
         spacing: CGFloat? = nil,
         count: Int = 5
     )
 }
 ```
-This initializer provides basic customization for the style of a `Rating`. For further customization, we introduce a `RatingStyle` protocol along with a convenience function on `View` for applying such a style to an entire view hierarchy:
+This initializer provides customization for the wholistic features of a `Rating`. To specify a custom style for the drawing of the star symbols, we introduce a `RatingStyle` protocol, along with a `RatingStyleConfiguration` struct for accessing the rating's value, count, and spacing:
 ```swift
-extension View {
-    public func ratingStyle<S>(_ style: S) -> some View where S : RatingStyle
+public protocol RatingStyle {
+    @ViewBuilder func makeStar(
+	    configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, 
+	    index: Int
+    ) -> any View
+}
+
+public struct RatingStyleConfiguration<Value: BinaryFloatingPoint> {
+    @Binding public var value: Value { get nonmutating set }
+    public let spacing: CGFloat
+    public let count: Int
+}
+```
+To define a custom rating style, create a type which conforms to `RatingStyle` by implementing the `makeStar(configuration:index:)` method. This method is responsible for generating the view for the star at a specific `index` in the `Rating` View. Utilize the `configuration` parameter—a `RatingStyleConfiguration` instance—to access the rating's value, count, and spacing. The implementation should return a view which has the appearance and behavior of the star at `index` in the rating with value `configuration.value`. As to why the return type of `makeStar(configuration:index)` is erased to `any View`, refer to section [Type Erasure Trade-off in RatingStyle](#type-erasure-trade-off-in-ratingstyle).
+
+For example, here's how to create a rating style which draws circles instead of stars:
+```swift
+struct CircleRatingStyle: RatingStyle {
+    func makeStar(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, index: Int) -> any View {
+		Image(systemName: Int(configuration.value) > index ? "circle.fill" : "circle")
+    }
 }
 ```
 
-A rating's style should be agnostic to the type of its value, because they deal with independent concerns. A rating's style specifies how a rating is drawn, and the type of a rating's value specifies how the value is represented in memory. For example, the following `CircleRatingStyle` should apply to each `Rating` regardless of the type used for it's value:
+Here's how to create a rating style which supports half-integer star ratings:
+```swift
+struct HalfStarRatingStyle: RatingStyle {
+    func makeStar<V: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<V>, index: Int) -> any View {
+		if configuration.value >= V(index + 1) {
+			Image(systemName: "star.fill")
+		} else if configuration.value + 0.5 >= V(index + 1) {
+			Image(systemName: "star.leadinghalf.filled")
+		} else {
+			Image(systemName: "star")
+		}
+    }
+}
+```
+
+To apply a rating style to a `Rating`, the API provides a convenience function on `View`, allowing the style to propagate to all `Rating` views within the hierarchy:
+```swift
+extension View {
+    public func ratingStyle<S>(_ style: S) -> some View where S: RatingStyle
+}
+```
+A rating's style should apply regardless of the type of `Value` used in each `Rating<Value>` in a view hierarchy, because they deal with independent concerns: the style specifies how a rating is drawn, and the type of `Value` specifies how a rating's value is represented in memory. For example, the following `CircleRatingStyle` should apply to each `Rating`:
 ```swift
 VStack {
     Rating(value: .constant(Float(3.2)))
@@ -37,53 +77,20 @@ VStack {
 }
 .ratingStyle(CircleRatingStyle())
 ```
-To support this, the `RatingStyle` protocol needs to use an opaque type for the value of the `RatingStyleConfiguration`, and return:
+This implies the type of `Value` should be erased in `RatingStyleConfiguration`. However, erasing this type makes it harder to implement styles which
 
-
-```swift
-public protocol RatingStyle {
-    @ViewBuilder func makeBody<Value: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<Value>) -> AnyView
-}
-
-public struct RatingStyleConfiguration<Value: BinaryFloatingPoint> {
-    @Binding public var value: Value { get nonmutating set }
-    public var count: Int
-    public var spacing: CGFloat
-}
-```
-To define a custom rating style, create a type which conforms to `RatingStyle` by implementing the `makeBody(configuration:)` method. This method is responsible for generating the view for *all* the stars in the `Rating` View. Utilize the `configuration` parameter—a `RatingStyleConfiguration` instance—to access the rating's value, star count, and spacing. The implementation should return a view which has the appearance and behavior of all of the stars in the rating view. The return type of `makeBody(configuration:)` is `AnyView`, because 
-
-For example, here's how to create a `CircleRatingStyle`, which uses circles instead of stars:
-```swift
-struct CircleRatingStyle: RatingStyle {
-    func makeBody<Value: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<Value>) -> any View {
-		HStack(spacing: configuration.spacing) {
-			ForEach(0 ..< configuration.count, id: \.self) { i in
-				let isFilled = Value(i) < configuration.value
-				Image(systemName: isFilled ? "circle.fill" : "circle")
-			}
-		}
-    }
-}
-```
-
-The `ratingStyle(_:)` modifier is defined on View, so we can apply a style to any view hierarchy, allowing the style to propagate to all `Rating` views within. Apply this modifier to a `Rating` instance or the surrounding view hierarchy to define the appearance and behavior of a rating view. For instance, using the previously defined `CircleRatingStyle`:
-```swift
-Rating(value: $value)
-    .ratingStyle(CircleRatingSyle())
-```
-
-To facilitate easy creation of a `Rating` view based on a specific configuration, use the following initializer:
+To facilitate easy modification of an existing style rather than implementing an entirely new one,
 ```swift
 extension Rating {
-    public init(_ configuration: RatingStyleConfiguration<Value>)
+    public init(_ configuration: RatingStyleConfiguration<Value>, index: Int)
 }
 ```
+
 This initializer is particularly useful for custom rating styles that aim to modify the existing style rather than implementing an entirely new one. For instance, the `RedBorderRatingStyle` below adds a red border to the rating while retaining the rating's current style:
 ```swift
 struct RedBorderRatingStyle: RatingStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        Rating(configuration)
+    func makeStar(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, index: Int) -> some View {
+        RatingStar(configuration, index: index)
             .padding()
             .border(.red)
     }
@@ -134,12 +141,15 @@ However, this creates a dependency on SF Symbols just for the convenience of imp
 
 ### Alternative 4
 
-# Type Erasure trade-off in `RatingStyle`
-In order for a rating's style to be agnostic to the type of its value, the `makeBody` of `RatingStyle` should be generic over the parameter `RatingStyleConfiguration<Value>`. To use the resulting `View`, we want to return an opaque type for `View`:
+# Type Erasure Trade-off in `RatingStyle`
+In order for a rating's style to be agnostic to the type of its value, the `makeStar(configuration:index)` method of `RatingStyle` should be generic over `Value` in  `RatingStyleConfiguration<Value>`. To use the resulting `View`, we want to return an opaque type for `View`:
 ```swift
 protocol RatingStyle {
     associatedtype Body: View
-    @ViewBuilder func makeBody<Value: BinaryFloatingPoint>(configuration: RatingStyleConfiguration<Value>) -> Body 
+    @ViewBuilder func makeStar(
+	    configuration: RatingStyleConfiguration<some BinaryFloatingPoint>,
+	    index: Int
+    ) -> Body
 }
 ```
 This protocol compiles fine, however, it's impossible to create a concrete type which conforms to this protocol. Associated type inference can only infer an opaque result type for a non-generic requirement, because the opaque type can be parameterized by the function's own generic arguments. For example, consider:
