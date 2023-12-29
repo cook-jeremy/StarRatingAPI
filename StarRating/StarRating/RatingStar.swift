@@ -11,7 +11,7 @@ public struct RatingStar<V: BinaryFloatingPoint>: View {
     
     @Environment(\.ratingStyles) var ratingStyles
     
-    private var configuration: RatingStyleConfiguration<V>
+    private var configuration: RatingStyleConfiguration
     
     private var index: Int
     
@@ -19,7 +19,7 @@ public struct RatingStar<V: BinaryFloatingPoint>: View {
         ratingStyles[ratingStyles.count - configuration.styleRecursionLevel - 1]
     }
     
-    public init(_ configuration: RatingStyleConfiguration<V>, index: Int) {
+    public init(_ configuration: RatingStyleConfiguration, index: Int) {
         self.configuration = configuration
         self.configuration.styleRecursionLevel += 1
         self.index = index
@@ -27,7 +27,7 @@ public struct RatingStar<V: BinaryFloatingPoint>: View {
     
     public var body: some View {
         AnyView(
-            style.makeStar(configuration: configuration, index: index)
+            style.makeBody(configuration: configuration, index: index)
         )
     }
 }

@@ -80,5 +80,15 @@ class StarRatingTests: XCTestCase {
         XCTAssertEqual(tapLocation, .star(index: 0, remainder: 0.75))
         XCTAssertEqual(tapLocation.value(precision: 0.5), 1)
         XCTAssertEqual(tapLocation.value(precision: 0.25), 1)
+        
+        tapLocation = rating.location(200, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 4, remainder: 1))
+        XCTAssertEqual(tapLocation.value(precision: 0.5), 5)
+        XCTAssertEqual(tapLocation.value(precision: 0.25), 5)
+        
+        tapLocation = rating.location(500, starWidth: 20, spacingWidth: 10)
+        XCTAssertEqual(tapLocation, .star(index: 4, remainder: 1))
+        XCTAssertEqual(tapLocation.value(precision: 0.5), 5)
+        XCTAssertEqual(tapLocation.value(precision: 0.25), 5)
     }
 }

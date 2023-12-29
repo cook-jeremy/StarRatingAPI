@@ -10,9 +10,7 @@ import StarRating
 
 struct RatingDemo: View {
     @State private var value: Double = 2.0
-    
     @State private var xPos: CGFloat = 0
-    
     @State private var width: CGFloat = 0
     @State private var starWidth: CGFloat = 0
     

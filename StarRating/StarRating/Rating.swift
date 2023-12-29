@@ -6,21 +6,23 @@
 //
 import SwiftUI
 
-public struct RatingStyleConfiguration<V: BinaryFloatingPoint> {
-    @Binding public var value: V
+public struct RatingStyleConfiguration {
+    public var value: Double
     public let spacing: CGFloat?
     public let count: Int
     internal var styleRecursionLevel: Int = 0
 }
 
 public protocol RatingStyle {
-    @ViewBuilder func makeStar(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, index: Int) -> any View
+    associatedtype Body: View
+    @ViewBuilder func makeBody(configuration: RatingStyleConfiguration, index: Int) -> Body
 }
 
 public struct SystemImageRatingStyle: RatingStyle {
     var systemName: String
+    
     @ViewBuilder
-    public func makeStar(configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, index: Int) -> any View {
+    public func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
         let isFilled = Int(configuration.value) > index
         Image(systemName: isFilled ? "\(systemName).fill" : systemName)
     }
@@ -61,15 +63,16 @@ extension View {
     }
 }
 
-public struct Rating<V: BinaryFloatingPoint>: View {
+public struct Rating: View {
     
     @Environment(\.ratingStyles) var ratingStyles
     
-    private var configuration: RatingStyleConfiguration<V>
+    @State private var configuration: RatingStyleConfiguration
     
+    @Binding var value: any BinaryFloatingPoint
     private var count: Int
     private var spacing: CGFloat?
-    private var precision: V
+    private var precision: Double
     
     @State private var starWidth: CGFloat = 0
     @State private var totalWidth: CGFloat = 0
@@ -78,17 +81,20 @@ public struct Rating<V: BinaryFloatingPoint>: View {
         case star(index: Int, remainder: CGFloat)
         case spacer(index: Int)
         
-        internal func value(precision: V) -> V {
+        internal func value(precision: Double) -> Double {
             switch self {
             case .star(let index, let remainder):
                 if precision != 0 {
-                    let precisionIndex = Int(V(remainder) / precision)
-                    return V(index) + V(precisionIndex + 1) * precision
+                    let precisionIndex = Int(Double(remainder) / precision)
+                    let maxPrecisionIndex = Int(1.0 / precision) - 1
+                    let realPrecisionIndex = min(maxPrecisionIndex, precisionIndex)
+                    let newValue = Double(index) + Double(realPrecisionIndex + 1) * precision
+                    return newValue
                 } else {
-                    return V(index) + V(remainder)
+                    return Double(index) + Double(remainder)
                 }
             case .spacer(let index):
-                return V(index + 1)
+                return Double(index + 1)
             }
         }
     }
@@ -113,23 +119,35 @@ public struct Rating<V: BinaryFloatingPoint>: View {
             .onChanged { value in
                 let spacingWidth = spacing ?? (totalWidth - starWidth * CGFloat(count)) / CGFloat(count - 1)
                 let tapLocation = location(value.location.x, starWidth: starWidth, spacingWidth: spacingWidth)
-                configuration.value = tapLocation.value(precision: precision)
+                let newValue = tapLocation.value(precision: precision)
+                self.value = newValue
+                self.configuration.value = newValue
             }
     }
     
-    public init(
+    public init<V>(
         value: Binding<V>,
         precision: V = 1,
         spacing: CGFloat? = nil,
         count: Int = 5
-    ) {
+    ) where V: BinaryFloatingPoint {
         precondition(count >= 0)
-        self.configuration = .init(
-            value: value,
-            spacing: spacing,
-            count: count
+        self._configuration = State(
+            wrappedValue: .init(
+                value: Double(value.wrappedValue),
+                spacing: spacing,
+                count: count
+            )
         )
-        self.precision = precision
+        
+        self._value = Binding {
+            value.wrappedValue
+        } set: { newValue in
+            if let newValue = newValue as? V {
+                value.wrappedValue = newValue
+            }
+        }
+        self.precision = Double(precision)
         self.spacing = spacing
         self.count = count
     }
@@ -142,7 +160,7 @@ public struct Rating<V: BinaryFloatingPoint>: View {
         HStack(spacing: spacing) {
             ForEach(0 ..< count, id: \.self) { i in
                 AnyView(
-                    style.makeStar(configuration: configuration, index: i)
+                    style.makeBody(configuration: configuration, index: i)
                 )
                 ._measureWidth($starWidth)
             }
