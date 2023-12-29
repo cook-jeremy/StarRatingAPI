@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct RatingStar<V: BinaryFloatingPoint>: View {
+public struct RatingStar: View {
     
     @Environment(\.ratingStyles) var ratingStyles
     

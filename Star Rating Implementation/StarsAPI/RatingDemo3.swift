@@ -8,14 +8,13 @@
 import SwiftUI
 import StarRating
 
-struct FloatingStarRatingStyle: RatingStyle {
-    func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
-        let percent = max(0, min(1, configuration.value - Double(index)))
-        StarShapeView(percent: CGFloat(percent))
-            .animation(.easeInOut, value: configuration.value)
-            .foregroundStyle(.orange)
-    }
-}
+//struct FloatingStarRatingStyle: RatingStyle {
+//    func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
+//        let percent = max(0, min(1, configuration.value - Double(index)))
+//        StarShapeView(percent: CGFloat(percent))
+//            .foregroundStyle(.orange)
+//    }
+//}
 
 struct HalfStarRatingStyle: RatingStyle {
     func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
@@ -47,16 +46,9 @@ struct RatingDemo3: View {
         VStack {
             Text("Rating value: \(value)")
             
-            Button(action: {
-                value = Double.random(in: 0 ..< 5)
-            }, label: {
-                Text("Change Value")
-            })
-            
             Rating(value: $value, precision: 0.5, spacing: 10, count: 5)
-                .animation(.easeInOut, value: value)
-//                .ratingStyle(HalfStarRatingStyle())
-                .ratingStyle(FloatingStarRatingStyle())
+                .ratingStyle(HalfStarRatingStyle())
+//                .ratingStyle(FloatingStarRatingStyle())
         }
     }
 }

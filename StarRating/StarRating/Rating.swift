@@ -21,10 +21,13 @@ public protocol RatingStyle {
 public struct SystemImageRatingStyle: RatingStyle {
     var systemName: String
     
+    public init(systemName: String) {
+        self.systemName = systemName
+    }
+    
     @ViewBuilder
     public func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
-        let isFilled = Int(configuration.value) > index
-        Image(systemName: isFilled ? "\(systemName).fill" : systemName)
+        Image(systemName: Int(configuration.value) > index ? "\(systemName).fill" : systemName)
     }
 }
 
@@ -113,7 +116,6 @@ public struct Rating: View {
         }
     }
     
-    
     var drag: some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
@@ -121,7 +123,6 @@ public struct Rating: View {
                 let tapLocation = location(value.location.x, starWidth: starWidth, spacingWidth: spacingWidth)
                 let newValue = tapLocation.value(precision: precision)
                 self.value = newValue
-                self.configuration.value = newValue
             }
     }
     
@@ -133,7 +134,7 @@ public struct Rating: View {
     ) where V: BinaryFloatingPoint {
         precondition(count >= 0)
         self._configuration = State(
-            wrappedValue: .init(
+            initialValue: .init(
                 value: Double(value.wrappedValue),
                 spacing: spacing,
                 count: count
@@ -143,9 +144,7 @@ public struct Rating: View {
         self._value = Binding {
             return Double(value.wrappedValue)
         } set: { newValue in
-            if let newValue = newValue as? V {
-                value.wrappedValue = newValue
-            }
+            value.wrappedValue = V(newValue)
         }
         self.precision = Double(precision)
         self.spacing = spacing

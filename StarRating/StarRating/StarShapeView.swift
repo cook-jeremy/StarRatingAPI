@@ -167,11 +167,15 @@ struct PartialHorizontalRectangle: Shape {
     }
 }
 
-public struct StarShapeView<S1, S2>: View where S1: ShapeStyle, S2: ShapeStyle {
+public struct StarShapeView<S1, S2>: View, Animatable where S1: ShapeStyle, S2: ShapeStyle {
     
     var percent: CGFloat
     var outerStyle: S1
     var innerStyle: S2
+    
+    public var animatableData: CGFloat {
+        percent
+    }
     
     public init(percent: CGFloat, outerStyle: S1 = .foreground, innerStyle: S2 = .foreground) {
         self.percent = percent
