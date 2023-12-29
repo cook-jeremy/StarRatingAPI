@@ -69,7 +69,7 @@ public struct Rating: View {
     
     @State private var configuration: RatingStyleConfiguration
     
-    @Binding var value: any BinaryFloatingPoint
+    @Binding var value: Double
     private var count: Int
     private var spacing: CGFloat?
     private var precision: Double
@@ -141,7 +141,7 @@ public struct Rating: View {
         )
         
         self._value = Binding {
-            value.wrappedValue
+            return Double(value.wrappedValue)
         } set: { newValue in
             if let newValue = newValue as? V {
                 value.wrappedValue = newValue
@@ -168,6 +168,9 @@ public struct Rating: View {
         .contentShape(Rectangle())
         .gesture(drag)
         ._measureWidth($totalWidth)
+        .onChange(of: value) { oldValue, newValue in
+            configuration.value = newValue
+        }
     }
 }
 
