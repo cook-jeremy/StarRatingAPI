@@ -18,13 +18,12 @@ import StarRating
 
 struct HalfStarRatingStyle: RatingStyle {
     func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
-        let starIndex = Double(index + 1)
         Group {
-            if configuration.value >= Double(starIndex) {
+            if index < Int(configuration.value) {
                 Image(systemName: "star.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-            } else if configuration.value + 0.5 >= Double(starIndex) {
+            } else if Double(index) <= configuration.value - 0.5 {
                 Image(systemName: "star.leadinghalf.filled")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
