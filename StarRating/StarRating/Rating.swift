@@ -158,10 +158,16 @@ public struct Rating: View {
     public var body: some View {
         HStack(spacing: spacing) {
             ForEach(0 ..< count, id: \.self) { i in
-                AnyView(
-                    style.makeBody(configuration: configuration, index: i)
-                )
-                ._measureWidth($starWidth)
+                if i == 0 {
+                    AnyView(
+                        style.makeBody(configuration: configuration, index: i)
+                    )
+                    ._measureWidth($starWidth)
+                } else {
+                    AnyView(
+                        style.makeBody(configuration: configuration, index: i)
+                    )
+                }
             }
         }
         .contentShape(Rectangle())
@@ -180,6 +186,9 @@ extension View {
                 Color.clear
                     .onAppear {
                         width.wrappedValue = geo.size.width
+                    }
+                    .onChange(of: geo.size.width) { _, newWidth in
+                        width.wrappedValue = newWidth
                     }
             }
         )

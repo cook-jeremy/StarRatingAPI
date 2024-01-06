@@ -20,6 +20,7 @@ struct RatingDemo: View {
         case modifyStyle = "Modify Style"
         case sfSymbols = "SF Symbols"
         case precision = "Precision"
+        case resize = "Resize"
     }
     
     @State private var selection: Demo = .default
@@ -51,6 +52,8 @@ struct RatingDemo: View {
                     SFSymbol()
                 case .precision:
                     Precision()
+                case .resize:
+                    Resize()
                 }
             }
             
@@ -202,6 +205,28 @@ struct Precision: View {
         }
         .ratingStyle(FloatingStarRatingStyle())
         .padding()
+    }
+}
+
+struct Resize: View {
+    @State private var width: CGFloat = 0
+    var body: some View {
+        VStack {
+            Text("width: \(width)")
+            Rectangle()
+                .foregroundStyle(.blue)
+                .overlay (
+                    GeometryReader { geo in
+                        Color.clear
+                            .onChange(of: geo.size.width, { oldValue, newValue in
+                                width = newValue
+                            })
+                            .onAppear {
+                                width = geo.size.width
+                            }
+                    }
+                )
+        }
     }
 }
 
