@@ -174,7 +174,8 @@ public struct StarShapeView<S1, S2>: View, Animatable where S1: ShapeStyle, S2: 
     var innerStyle: S2
     
     public var animatableData: CGFloat {
-        percent
+        get { percent }
+        set { percent = newValue }
     }
     
     public init(percent: CGFloat, outerStyle: S1 = .foreground, innerStyle: S2 = .foreground) {
@@ -201,9 +202,21 @@ public struct StarShapeView<S1, S2>: View, Animatable where S1: ShapeStyle, S2: 
     }
 }
 
+struct StarShapeViewPreviewer: View {
+    @State private var percent = 1.0
+    
+    var body: some View {
+        StarShapeView(percent: percent, innerStyle: .orange)
+            .contentShape(Rectangle())
+            .animation(.easeInOut, value: percent)
+            .frame(width: 400, height: 400)
+            .onTapGesture {
+                percent = percent == 0 ? 1 : 0
+            }
+    }
+}
+
 #Preview {
-    StarShapeView(percent: 0.3, innerStyle: .orange)
-        .foregroundStyle(.gray)
-        .frame(width: 400, height: 400)
+    StarShapeViewPreviewer()
 }
 

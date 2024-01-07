@@ -11,11 +11,7 @@
 		80A002382B373B7100798825 /* StarRating.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80A0022D2B373B7100798825 /* StarRating.framework */; };
 		80A0023D2B373B7100798825 /* StarRatingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0023C2B373B7100798825 /* StarRatingTests.swift */; };
 		80A002482B373BC400798825 /* Rating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A002472B373BC400798825 /* Rating.swift */; };
-		80A0024F2B373C1000798825 /* RatingPreviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0024E2B373C1000798825 /* RatingPreviews.swift */; };
-		80A002512B373C3F00798825 /* FloatingPointSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A002502B373C3F00798825 /* FloatingPointSquare.swift */; };
-		80A002552B373DD500798825 /* RatingAnyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A002542B373DD500798825 /* RatingAnyView.swift */; };
 		80A002572B37674E00798825 /* StarShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A002562B37674E00798825 /* StarShapeView.swift */; };
-		80A0025D2B386DF300798825 /* Rating-12-24-23.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0025C2B386DF300798825 /* Rating-12-24-23.swift */; };
 		80A0025F2B388ED800798825 /* RatingStar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0025E2B388ED800798825 /* RatingStar.swift */; };
 /* End PBXBuildFile section */
 
@@ -35,11 +31,7 @@
 		80A002372B373B7100798825 /* StarRatingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StarRatingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		80A0023C2B373B7100798825 /* StarRatingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRatingTests.swift; sourceTree = "<group>"; };
 		80A002472B373BC400798825 /* Rating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rating.swift; sourceTree = "<group>"; };
-		80A0024E2B373C1000798825 /* RatingPreviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingPreviews.swift; sourceTree = "<group>"; };
-		80A002502B373C3F00798825 /* FloatingPointSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPointSquare.swift; sourceTree = "<group>"; };
-		80A002542B373DD500798825 /* RatingAnyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingAnyView.swift; sourceTree = "<group>"; };
 		80A002562B37674E00798825 /* StarShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarShapeView.swift; sourceTree = "<group>"; };
-		80A0025C2B386DF300798825 /* Rating-12-24-23.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rating-12-24-23.swift"; sourceTree = "<group>"; };
 		80A0025E2B388ED800798825 /* RatingStar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingStar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,11 +77,7 @@
 			children = (
 				80A002472B373BC400798825 /* Rating.swift */,
 				80A0025E2B388ED800798825 /* RatingStar.swift */,
-				80A0025C2B386DF300798825 /* Rating-12-24-23.swift */,
 				80A002562B37674E00798825 /* StarShapeView.swift */,
-				80A0024E2B373C1000798825 /* RatingPreviews.swift */,
-				80A002502B373C3F00798825 /* FloatingPointSquare.swift */,
-				80A002542B373DD500798825 /* RatingAnyView.swift */,
 				80A002312B373B7100798825 /* StarRating.docc */,
 			);
 			path = StarRating;
@@ -211,14 +199,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80A002552B373DD500798825 /* RatingAnyView.swift in Sources */,
 				80A002482B373BC400798825 /* Rating.swift in Sources */,
 				80A0025F2B388ED800798825 /* RatingStar.swift in Sources */,
-				80A0024F2B373C1000798825 /* RatingPreviews.swift in Sources */,
 				80A002322B373B7100798825 /* StarRating.docc in Sources */,
-				80A0025D2B386DF300798825 /* Rating-12-24-23.swift in Sources */,
 				80A002572B37674E00798825 /* StarShapeView.swift in Sources */,
-				80A002512B373C3F00798825 /* FloatingPointSquare.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,7 +351,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = A2AB5UMPJF;
+				DEVELOPMENT_TEAM = XJC36HQ4H4;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -406,7 +390,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = A2AB5UMPJF;
+				DEVELOPMENT_TEAM = XJC36HQ4H4;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";

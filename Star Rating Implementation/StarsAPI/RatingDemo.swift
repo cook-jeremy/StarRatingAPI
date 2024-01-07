@@ -20,7 +20,7 @@ struct RatingDemo: View {
         case modifyStyle = "Modify Style"
         case sfSymbols = "SF Symbols"
         case precision = "Precision"
-        case resize = "Resize"
+        case halfStar = "Half-Star Style"
     }
     
     @State private var selection: Demo = .default
@@ -52,8 +52,8 @@ struct RatingDemo: View {
                     SFSymbol()
                 case .precision:
                     Precision()
-                case .resize:
-                    Resize()
+                case .halfStar:
+                    HalfStarStyle()
                 }
             }
             
@@ -208,25 +208,32 @@ struct Precision: View {
     }
 }
 
-struct Resize: View {
-    @State private var width: CGFloat = 0
-    var body: some View {
-        VStack {
-            Text("width: \(width)")
-            Rectangle()
-                .foregroundStyle(.blue)
-                .overlay (
-                    GeometryReader { geo in
-                        Color.clear
-                            .onChange(of: geo.size.width, { oldValue, newValue in
-                                width = newValue
-                            })
-                            .onAppear {
-                                width = geo.size.width
-                            }
-                    }
-                )
+struct HalfStarRatingStyle: RatingStyle {
+    func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
+        Group {
+            if index < Int(configuration.value) {
+                Image(systemName: "star.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else if Double(index) <= configuration.value - 0.5 {
+                Image(systemName: "star.leadinghalf.filled")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                Image(systemName: "star")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            }
         }
+        .foregroundStyle(.orange)
+    }
+}
+
+struct HalfStarStyle: View {
+    @State private var value =  3.0
+    var body: some View {
+        Rating(value: $value, precision: 0.5)
+            .ratingStyle(HalfStarRatingStyle())
     }
 }
 
