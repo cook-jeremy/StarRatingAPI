@@ -66,10 +66,10 @@ public struct Rating: View {
     
     @State private var configuration: RatingStyleConfiguration
     
-    @Binding var value: Double
-    private var count: Int
+    @Binding private var value: Double
+    private var granularity: CGFloat
     private var spacing: CGFloat?
-    private var precision: Double
+    private var count: Int
     
     @State private var starWidth: CGFloat = 0
     @State private var totalWidth: CGFloat = 0
@@ -78,20 +78,20 @@ public struct Rating: View {
         case star(index: Int, remainder: CGFloat)
         case spacer(index: Int)
         
-        internal func value(precision: Double) -> Double {
+        internal func value(granularity: CGFloat) -> CGFloat {
             switch self {
             case .star(let index, let remainder):
-                if precision != 0 {
-                    let precisionIndex = Int(Double(remainder) / precision)
-                    let maxPrecisionIndex = Int(1.0 / precision) - 1
-                    let realPrecisionIndex = min(maxPrecisionIndex, precisionIndex)
-                    let newValue = Double(index) + Double(realPrecisionIndex + 1) * precision
+                if granularity != 0 {
+                    let granularityIndex = Int(CGFloat(remainder) / granularity)
+                    let maxGranularityIndex = Int(1.0 / granularity) - 1
+                    let realGranularityIndex = min(maxGranularityIndex, granularityIndex)
+                    let newValue = CGFloat(index) + CGFloat(realGranularityIndex + 1) * granularity
                     return newValue
                 } else {
-                    return Double(index) + Double(remainder)
+                    return CGFloat(index) + CGFloat(remainder)
                 }
             case .spacer(let index):
-                return Double(index + 1)
+                return CGFloat(index + 1)
             }
         }
     }
@@ -115,18 +115,18 @@ public struct Rating: View {
             .onChanged { value in
                 let spacingWidth = spacing ?? (totalWidth - starWidth * CGFloat(count)) / CGFloat(count - 1)
                 let tapLocation = location(value.location.x, starWidth: starWidth, spacingWidth: spacingWidth)
-                let newValue = tapLocation.value(precision: precision)
+                let newValue = tapLocation.value(granularity: granularity)
                 self.value = newValue
             }
     }
     
     public init<V>(
         value: Binding<V>,
-        precision: V = 1,
+        granularity: CGFloat = 1,
         spacing: CGFloat? = nil,
         count: Int = 5
     ) where V: BinaryFloatingPoint {
-        precondition(precision >= 0 && precision <= 1)
+        precondition(granularity >= 0 && granularity <= 1)
         if let spacing {
             precondition(spacing >= 0)
         }
@@ -145,7 +145,7 @@ public struct Rating: View {
         } set: { newValue in
             value.wrappedValue = V(newValue)
         }
-        self.precision = Double(precision)
+        self.granularity = granularity
         self.spacing = spacing
         self.count = count
     }

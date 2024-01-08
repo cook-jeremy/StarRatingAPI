@@ -19,7 +19,7 @@ struct RatingDemo: View {
         case circleStyle = "Circle Style"
         case modifyStyle = "Modify Style"
         case sfSymbols = "SF Symbols"
-        case precision = "Precision"
+        case granularity = "Granularity"
         case halfStar = "Half-Star Style"
     }
     
@@ -50,8 +50,8 @@ struct RatingDemo: View {
                     ModifyStyle()
                 case .sfSymbols:
                     SFSymbol()
-                case .precision:
-                    Precision()
+                case .granularity:
+                    Granularity()
                 case .halfStar:
                     HalfStarStyle()
                 }
@@ -168,7 +168,7 @@ struct FloatingStarRatingStyle: RatingStyle {
     }
 }
 
-struct Precision: View {
+struct Granularity: View {
     @State private var value1 = 3.0
     @State private var value05 = 2.5
     @State private var value025 = 2.25
@@ -177,7 +177,7 @@ struct Precision: View {
     var body: some View {
         Grid {
             GridRow {
-                Text("Precision")
+                Text("Granularity")
                 Text("Drawing")
                 Text("Value")
             }
@@ -189,17 +189,17 @@ struct Precision: View {
             }
             GridRow {
                 Text("0.5")
-                Rating(value: $value05, precision: 0.5)
+                Rating(value: $value05, granularity: 0.5)
                 Text("\(value05)")
             }
             GridRow {
                 Text("0.25")
-                Rating(value: $value025, precision: 0.25)
+                Rating(value: $value025, granularity: 0.25)
                 Text("\(value025)")
             }
             GridRow {
                 Text("0")
-                Rating(value: $value0, precision: 0)
+                Rating(value: $value0, granularity: 0)
                 Text("\(value0)")
             }
         }
@@ -232,7 +232,7 @@ struct HalfStarRatingStyle: RatingStyle {
 struct HalfStarStyle: View {
     @State private var value =  3.0
     var body: some View {
-        Rating(value: $value, precision: 0.5)
+        Rating(value: $value, granularity: 0.5)
             .ratingStyle(HalfStarRatingStyle())
     }
 }
