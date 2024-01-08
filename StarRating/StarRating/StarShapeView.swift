@@ -206,7 +206,8 @@ struct StarShapeViewPreviewer: View {
     @State private var percent = 1.0
     
     var body: some View {
-        StarShapeView(percent: percent, innerStyle: .orange)
+        StarShapeView(percent: percent)
+            .foregroundStyle(.orange)
             .contentShape(Rectangle())
             .animation(.easeInOut, value: percent)
             .frame(width: 400, height: 400)

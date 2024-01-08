@@ -2,14 +2,16 @@
 
 ## Introduction
 This proposal introduces an API in the SwiftUI framework for a star rating view. For example:
+
 <img width="133" alt="Screenshot 2023-12-07 at 11 02 58 PM" src="https://github.com/cook-jeremy/StarRatingAPI/assets/12803067/ae6806b4-7bd9-4196-a8d6-450aab83ad6a">
-We call this new view `Rating`.  The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars. The aim is to provide a consistent rating experience across all Apple platforms, while also providing ample customizability for specific apps.
+
+We call this new view `Rating`.  The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars. The aim is to provide a consistent rating experience across all Apple platforms, while also providing customizability for specific apps.
 
 ## Detailed Design
-The initializer for `Rating` has only one required parameter: a binding to the value of the rating, which must conform to the `BinaryFloatingPoint` protocol (e.g. `Float`, `Double`). The rest of the initialization parameters customize the holistic features of a `Rating`, and each has a default value:
-- **Granularity:** The step size by which symbols are filled. A granularity of 1 indicates an integer step size, so each symbol is either empty or completely filled. A granularity of 0.5 indicates a half-integer step size, 0.25 indicates a quarter-integer step size, etc. A granularity of 0 indicates an extremely small step size (the maximum precision of `Double`). The valid range of granularity is `0...1`.
-- **Spacing:** The spacing between symbols. The default spacing is that of `HStack`.
-- **Count:** The number of symbols. The default is 5. The minimum is 1.
+The initializer for `Rating` has only one required parameter: a binding to the value of the rating, which must conform to the `BinaryFloatingPoint` protocol (e.g. `Float`, `Double`). The rest of the initialization parameters customize the holistic features of the `Rating`, and each has a default value:
+- **Granularity:** The discrete step size by which symbols are filled. A granularity of 1 indicates an integer step size, so each symbol is either empty or completely filled. A granularity of 0.5 indicates a half-integer step size, so each symbol is either empty, half filled, or completely filled. A granularity of 0.25 indicates a quarter-integer step size, and so on. A granularity of 0 indicates an extremely small step size (the maximum precision of `Double`), giving the appearance of a continuous step size. The valid range of granularity is `0...1`, and the default is 1.
+- **Spacing:** The spacing between symbols. The valid range of spacing is `0...`, and the default is that of `HStack`.
+- **Count:** The number of symbols. The valid range of count is `1...100`, and the default is 5.
 
 The API for the initializer of `Rating` is:
 ```swift
@@ -22,7 +24,8 @@ public struct Rating: View {
     ) where Value: BinaryFloatingPoint
 }
 ```
-The main benefit of `Rating` over an `HStack` of symbols is the gesture interaction it provides. The user can tap or drag to choose a rating. The gesture works even if the user taps in between symbols, or drags out of bounds. The resulting value is the ceiling of the closest step size specified by the `granularity` parameter. For example, if a user taps at location 3.2 with a granularity of 0.5, the value will update to 3.5. If the user taps in the space between the first symbol and the second symbol, the value will update to 1.
+
+`Rating` provides a default drag gesture interaction for selecting a rating: the user can simply tap to update the rating value, or tap and drag to update the rating value. This gesture is implemented as a drag gesture with a minimum drag distance of 0. The gesture works even if the user taps in between symbols, or drags out of bounds of the `Rating`. If the user taps in between two symbols, the resulting value is that of the leading symbol. If the user taps inside of a symbol, the resulting value is the next ceiling specified by the `granularity` parameter. For example, if a user taps at location 1.2 (second symbol, 1/5 of the width of the symbol) with a granularity of 0.5, the resulting value will update to 1.5.
 
 To draw custom symbols, we introduce a `RatingStyle` protocol, along with a `RatingStyleConfiguration` struct for accessing the rating's current value and symbol count:
 ```swift
@@ -47,28 +50,13 @@ struct CircleRatingStyle: RatingStyle {
 }
 ```
 
-Here's a rating style which supports half-integer star ratings:
-```swift
-struct HalfStarRatingStyle: RatingStyle {
-    func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
-		if index < Int(configuration.value) {
-			Image(systemName: "star.fill")
-		} else if Double(index) <= configuration.value - 0.5 {
-			Image(systemName: "star.leadinghalf.filled")
-		} else {
-			Image(systemName: "star")
-		}
-    }
-}
-```
-
 To apply a rating style to a `Rating`, the API provides a convenience method on `View`:
 ```swift
 extension View {
     public func ratingStyle<S>(_ style: S) -> some View where S: RatingStyle
 }
 ```
-This method will propagate the style to all `Rating` views within the view hierarchy. If we create a `circle` static variable from the `CircleRatingStyle`, we can apply the style to each `Rating` in the following:
+This method will propagate the style to all `Rating` views within the view hierarchy. If we create a `circle` static variable for the `CircleRatingStyle` from earlier, we can apply the style to each `Rating` in the following view hierarchy:
 ```swift
 VStack {
     Rating(value: .constant(Float(3.2)))
@@ -77,14 +65,13 @@ VStack {
 .ratingStyle(.circle)
 ```
 
-To facilitate easy modification of an existing style rather than implementing an entirely new one, we provide an additional initializer:
+To facilitate easy modification of an existing style rather than implementing an entirely new one, we provide an additional initializer for `Rating`:
 ```swift
 extension Rating {
     public init(configuration: RatingStyleConfiguration, index: Int)
 }
 ```
-
-This initializer is particularly useful for custom rating styles that aim to modify the existing style rather than implementing an entirely new one. For instance, the `RedBorderRatingStyle` below adds a red border to the rating while retaining the rating's current style:
+For example, the `RedBorderRatingStyle` below adds a red border to each rating symbol while retaining the rating's current style:
 ```swift
 struct RedBorderRatingStyle: RatingStyle {
     func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
@@ -94,7 +81,6 @@ struct RedBorderRatingStyle: RatingStyle {
     }
 }
 ```
-
 If we create a `redBorder` static variable from this style, we can apply the style to ratings that already use another style, like the `circle` style from earlier:
 ```swift
 Rating(value: $value)
@@ -195,41 +181,19 @@ struct SystemImageRatingStyle: RatingStyle {
 ```
 However, this creates a dependency on SF Symbols just for the convenience of implementing a simple rating, which is not worth the trade-off.
 
-# To-do
-- Support for animations
-- Support for watchOS scrolling and tvOS scrolling interaction
-- Gesture bug after view resizing
-- Maximum value for symbol count
+# Examples
 
-# Market Research
-We explore the current space of star rating UIs to identify customization parameters that are important to developers.
-
-- App Store
-	- Individual rating
-		- Integer star increments
-		- Interactive version:
-			- Blue filled star and blue bordered star
-			- Tap to rate
-			- Tap-and-drag to rate
-			- Slightly different star shape
-		- Non-interactive version:
-			- Orange filled star and orange bordered star
-	- Average rating
-		- Non-interactive
-		- One decimal precision increments
-		- Star is precisely filled to represent floating point rating
-		- Has label (for ex: 4.6) above rating in big font
-
-Customization parameters:
-- Individual star style
-	- Color, shape, border, background, shadow, gradient
-	- Fill precision, i.e. how draw a star filled to X%
-- Wholistic rating style
-	- Spacing between stars
-	- Number of stars
-	- Orientation of rating (vertical, horizontal, right-to-left, left-to-right)
-	- Label above rating
-	- Gradient across stars
-
-# Useful Links
-https://forums.swift.org/t/type-erasing-in-swift-anyview-behind-the-scenes/27952/9
+Here's a rating style which supports half-integer star ratings:
+```swift
+struct HalfStarRatingStyle: RatingStyle {
+    func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
+		if index < Int(configuration.value) {
+			Image(systemName: "star.fill")
+		} else if Double(index) <= configuration.value - 0.5 {
+			Image(systemName: "star.leadinghalf.filled")
+		} else {
+			Image(systemName: "star")
+		}
+    }
+}
+```

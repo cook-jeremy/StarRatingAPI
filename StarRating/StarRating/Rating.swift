@@ -1,9 +1,3 @@
-//
-//  Rating.swift
-//  StarsAPI
-//
-//  Created by Jeremy Cook on 12/7/23.
-//
 import SwiftUI
 
 public struct RatingStyleConfiguration {
@@ -132,8 +126,12 @@ public struct Rating: View {
         spacing: CGFloat? = nil,
         count: Int = 5
     ) where V: BinaryFloatingPoint {
-        precondition(count >= 0 && count <= 100)
         precondition(precision >= 0 && precision <= 1)
+        if let spacing {
+            precondition(spacing >= 0)
+        }
+        precondition(count >= 0 && count <= 100)
+        
         self._configuration = State(
             initialValue: .init(
                 value: Double(value.wrappedValue),
