@@ -16,8 +16,8 @@ The initializer for `Rating` has only one required parameter: a binding to the v
 The API for the initializer of `Rating` is:
 ```swift
 public struct Rating: View {
-	public init<Value>(
-        value: Binding<Value>,
+    public init<Value>(
+	value: Binding<Value>,
         granularity: CGFloat = 1,
         spacing: CGFloat? = nil,
         count: Int = 5
@@ -30,7 +30,7 @@ public struct Rating: View {
 To draw custom symbols, we introduce a `RatingStyle` protocol, along with a `RatingStyleConfiguration` struct for accessing the rating's current value and symbol count:
 ```swift
 public protocol RatingStyle {
-	associatedtype Body: View
+    associatedtype Body: View
     @ViewBuilder func makeBody(configuration: RatingStyleConfiguration, index: Int) -> Body
 }
 
@@ -45,7 +45,7 @@ For example, here's a rating style that draws circle symbols instead of star sym
 ```swift
 struct CircleRatingStyle: RatingStyle {
     func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
-		Image(systemName: index < Int(configuration.value) ? "circle.fill" : "circle")
+        Image(systemName: index < Int(configuration.value) ? "circle.fill" : "circle")
     }
 }
 ```
@@ -75,7 +75,7 @@ For example, the `RedBorderRatingStyle` below adds a red border to each rating s
 ```swift
 struct RedBorderRatingStyle: RatingStyle {
     func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
-	    Rating(configuration: configuration, index: index)
+        Rating(configuration: configuration, index: index)
             .padding()
             .border(.red)
     }
@@ -94,14 +94,14 @@ We also offer an API to easily create a `RatingStyle` using system images:
 struct SystemImageRatingStyle: RatingStyle {
     var systemName: String
     func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
-		Image(systemName: index < Int(configuration.value) ? "\(systemName).fill" : systemName)
+        Image(systemName: index < Int(configuration.value) ? "\(systemName).fill" : systemName)
     }
 }
 ```
 There are over 2,000 SF Symbols which have a `.fill` counterpart (like `circle` and `circle.fill`), so only the name before the `.fill` needs to be provided. The `CircleRatingStyle` from earlier can be implemented as:
 ```swift
 Rating(value: $value)
-	.ratingStyle(SystemImageRatingStyle(systemName: "circle"))
+    .ratingStyle(SystemImageRatingStyle(systemName: "circle"))
 ```
 
 ## Alternatives Considered
@@ -110,8 +110,8 @@ We considered a `RatingStyleConfiguration` that's generic over the type `Value` 
 ```swift
 public protocol RatingStyle {
     @ViewBuilder func makeBody(
-	    configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, 
-	    index: Int
+        configuration: RatingStyleConfiguration<some BinaryFloatingPoint>, 
+        index: Int
     ) -> any View
 }
 
@@ -125,14 +125,14 @@ However, not much is gained by keeping the concrete type of `Value` using generi
 We also have to erase the result type of `makeBody` from `some View` to `any View`. Associated type inference can only infer an opaque result type for a non-generic requirement, because the opaque type can be parameterized by the function's own generic arguments. For example, consider:
 ```swift
 protocol Recipe {
-	associatedtype Dish: Recipe
-	func makeDish<Ingredient: Recipe>(ingredient: Ingredient) -> Dish
+    associatedtype Dish: Recipe
+    func makeDish<Ingredient: Recipe>(ingredient: Ingredient) -> Dish
 }
 
 struct Chef: Recipe {
-	func makeDish<Ingredient: Recipe>(ingredient: Ingredient) -> some Recipe {
-		return ingredient
-	}
+    func makeDish<Ingredient: Recipe>(ingredient: Ingredient) -> some Recipe {
+        return ingredient
+    }
 }
 ```
 There is no single underlying type to infer `Dish` because it depends on the generic parameter `Ingredient` which is allowed to change with the caller. The only way around it is to type erase the parameter or the return value. In our case, erasing `some View` to `any View` in `makeBody` leads to less efficient view diffing, so view updates of `Rating` aren't as efficient because the type of our view hierarchy is erased.
@@ -191,13 +191,13 @@ Here's a rating style which supports half-integer star ratings using SF Symbols:
 ```swift
 struct HalfStarRatingStyle: RatingStyle {
     func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
-		if index < Int(configuration.value) {
-			Image(systemName: "star.fill")
-		} else if CGFloat(index) <= configuration.value - 0.5 {
-			Image(systemName: "star.leadinghalf.filled")
-		} else {
-			Image(systemName: "star")
-		}
+	if index < Int(configuration.value) {
+		Image(systemName: "star.fill")
+	} else if CGFloat(index) <= configuration.value - 0.5 {
+		Image(systemName: "star.leadinghalf.filled")
+	} else {
+		Image(systemName: "star")
+	}
     }
 }
 ```
