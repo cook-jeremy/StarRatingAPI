@@ -13,6 +13,7 @@
 		80A0024B2B373BE100798825 /* StarRating.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80A0024A2B373BE100798825 /* StarRating.framework */; };
 		80A0024C2B373BE100798825 /* StarRating.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 80A0024A2B373BE100798825 /* StarRating.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		80A002532B373CEC00798825 /* RatingDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A002522B373CEC00798825 /* RatingDemo.swift */; };
+		80CE2C9A2B4C5EEC003DC7E2 /* ParameterDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CE2C992B4C5EEC003DC7E2 /* ParameterDemo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +38,7 @@
 		8027DD2C2B22217F00A271FE /* StarsAPI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StarsAPI.entitlements; sourceTree = "<group>"; };
 		80A0024A2B373BE100798825 /* StarRating.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StarRating.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		80A002522B373CEC00798825 /* RatingDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingDemo.swift; sourceTree = "<group>"; };
+		80CE2C992B4C5EEC003DC7E2 /* ParameterDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterDemo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				8027DD232B22217E00A271FE /* StarsAPIApp.swift */,
+				80CE2C992B4C5EEC003DC7E2 /* ParameterDemo.swift */,
 				80A002522B373CEC00798825 /* RatingDemo.swift */,
 				8027DD272B22217F00A271FE /* Assets.xcassets */,
 				8027DD2C2B22217F00A271FE /* StarsAPI.entitlements */,
@@ -167,6 +170,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80CE2C9A2B4C5EEC003DC7E2 /* ParameterDemo.swift in Sources */,
 				8027DD242B22217E00A271FE /* StarsAPIApp.swift in Sources */,
 				80A002532B373CEC00798825 /* RatingDemo.swift in Sources */,
 			);
