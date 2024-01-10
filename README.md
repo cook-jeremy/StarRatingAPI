@@ -7,6 +7,13 @@ This proposal introduces an API in the SwiftUI framework for a star rating view.
 
 We call this new view `Rating`.  The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars. The aim is to provide a consistent rating experience across all Apple platforms, while also providing customizability for specific apps.
 
+## Demo
+
+Here's a demo of some of the ways to customize the star rating view:
+ ![ScreenRecording2024-01-10at9 47 48AM-ezgif com-video-to-gif-converter](https://github.com/cook-jeremy/StarRatingAPI/assets/12803067/a1e5d2bd-f296-40e6-a9c0-f8743a5f45f6)
+
+This demo project is included in the repository.
+
 ## Detailed Design
 The initializer for `Rating` has only one required parameter: a binding to the value of the rating, which must conform to the `BinaryFloatingPoint` protocol (e.g. `Float`, `Double`). The rest of the initialization parameters customize the holistic features of the `Rating`, and each has a default value:
 - **Granularity:** The discrete step size by which symbols can be filled. A granularity of 1 indicates an integer step size, so each symbol can either be empty or completely filled. A granularity of 0.5 indicates a half-integer step size, so each symbol can be empty, half filled, or completely filled. A granularity of 0.25 indicates a quarter-integer step size, and so on. A granularity of 0 indicates an extremely small step size (the maximum precision of `CGFloat`), which gives the appearance of a continuous scale. The valid range of granularity is `0...1`, and the default is 1.
@@ -186,7 +193,8 @@ Rating(value: $value) { index in
 While this approach addresses basic customization needs, it introduces limitations and complexities. If a user wants to apply a consistent style across multiple `Rating` views within the app, they're forced to implement this closure in every place, or to create a wrapper view that encapsulates this closure. This leads to more repetitive and verbose code, compared to applying one `.ratingStyle(_:)` modifier at the root of the view hierarchy. This approach also doesn't allow for styles to be composed, like the `.redBorder` and `.circle` rating styles from earlier.
 
 Although the `@ViewBuilder` approach provides a straightforward method for customization, the `RatingStyle` protocol aligns more closely with SwiftUI's design philosophy, which emphasizes reusable components and consistent styling. `RatingStyle` presents a more structured and scalable method for customizing the appearance of rating views, which not only ensures consistency across the application but also with the SwiftUI framework.
-# Examples
+
+## Examples
 Here's a rating style which supports half-integer star ratings using SF Symbols:
 ```swift
 struct HalfStarRatingStyle: RatingStyle {
@@ -201,3 +209,4 @@ struct HalfStarRatingStyle: RatingStyle {
     }
 }
 ```
+
