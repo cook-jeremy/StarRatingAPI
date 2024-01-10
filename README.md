@@ -7,9 +7,6 @@ This proposal introduces an API in the SwiftUI framework for a star rating view.
 
 We call this new view `Rating`.  The name `Rating` was chosen over `StarRating` to emphasize the flexibility in customizing the appearance of the rating symbols beyond stars. The aim is to provide a consistent rating experience across all Apple platforms, while also providing customizability for specific apps.
 
-## Sandbox
-TODO
-
 ## Detailed Design
 The initializer for `Rating` has only one required parameter: a binding to the value of the rating, which must conform to the `BinaryFloatingPoint` protocol (e.g. `Float`, `Double`). The rest of the initialization parameters customize the holistic features of the `Rating`, and each has a default value:
 - **Granularity:** The discrete step size by which symbols can be filled. A granularity of 1 indicates an integer step size, so each symbol can either be empty or completely filled. A granularity of 0.5 indicates a half-integer step size, so each symbol can be empty, half filled, or completely filled. A granularity of 0.25 indicates a quarter-integer step size, and so on. A granularity of 0 indicates an extremely small step size (the maximum precision of `CGFloat`), which gives the appearance of a continuous scale. The valid range of granularity is `0...1`, and the default is 1.
@@ -109,8 +106,6 @@ Rating(value: $value)
 
 ## Alternatives Considered
 ### Alternative 1
-The `RatingStyleConfiguration` casts the type of `Value` used in the initializer of `Rating` to a `Double`. This is because not much is gained....
-
 We considered a `RatingStyleConfiguration` that's generic over the type `Value` used in the initializer of `Rating`, so that a custom style can decide how to draw a symbol using the original `BinaryFloatingPoint` type:
 ```swift
 public protocol RatingStyle {
@@ -142,10 +137,6 @@ struct Chef: Recipe {
 ```
 There is no single underlying type to infer `Dish` because it depends on the generic parameter `Ingredient` which is allowed to change with the caller. The only way around it is to type erase the parameter or the return value. In our case, erasing `some View` to `any View` in `makeBody` leads to less efficient view diffing, so view updates of `Rating` aren't as efficient because the type of our view hierarchy is erased.
 ### Alternative 2
-Why an alternative gesture is not allowed...
-
-Are these alternatives bad or future functionality?...
-
 We considered providing a binding to the value of a rating in `RatingStyleConfiguration`, instead of a read-only value:
 ```swift
 public struct RatingStyleConfiguration {
@@ -157,8 +148,6 @@ This way a custom style can change the value of a rating, altering how a user in
 
 If we look at all the custom styles in the SwiftUI framework, there is only one other style which provides a binding: `ToggleStyle`. `Toggle` has a genuine use case for this binding, because how a `Toggle` is switched on and off has options for customization, for example a rocker switch vs a tap button. The gesture interaction for choosing a rating is more universally defined, so it is not necessary to provide customizability in this aspect. In fact, limiting the type of interaction to a drag gesture improves consistency across platforms and apps, so users are less confused when providing ratings in Apple apps and third party apps.
 ### Alternative 3
-Loss of framework provided gesture and structure
-
 We considered a `RatingStyle` whose `makeBody` creates the appearance and behavior of *all* symbols in the rating view, instead of each symbol. The advantage of such a configuration allows for greater customization, at the cost of greater complexity for the developer and the loss of a framework provided gesture. If the user creates a custom style which includes all the symbols, they are responsible for handling how a value is selected based on the interaction with the view. For example, such an implementation would look like:
 ```swift
 struct StarRatingStyle: RatingStyle {
