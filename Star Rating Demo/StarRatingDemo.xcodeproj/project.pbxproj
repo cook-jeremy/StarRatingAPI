@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8027DD242B22217E00A271FE /* StarsAPIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8027DD232B22217E00A271FE /* StarsAPIApp.swift */; };
+		8027DD242B22217E00A271FE /* StarsRatingDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8027DD232B22217E00A271FE /* StarsRatingDemoApp.swift */; };
 		8027DD282B22217F00A271FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8027DD272B22217F00A271FE /* Assets.xcassets */; };
 		8027DD2B2B22217F00A271FE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8027DD2A2B22217F00A271FE /* Preview Assets.xcassets */; };
 		80A0024B2B373BE100798825 /* StarRating.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80A0024A2B373BE100798825 /* StarRating.framework */; };
@@ -31,8 +31,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		8027DD202B22217E00A271FE /* StarsAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StarsAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8027DD232B22217E00A271FE /* StarsAPIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarsAPIApp.swift; sourceTree = "<group>"; };
+		8027DD202B22217E00A271FE /* StarRatingDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StarRatingDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8027DD232B22217E00A271FE /* StarsRatingDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarsRatingDemoApp.swift; sourceTree = "<group>"; };
 		8027DD272B22217F00A271FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8027DD2A2B22217F00A271FE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8027DD2C2B22217F00A271FE /* StarsAPI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StarsAPI.entitlements; sourceTree = "<group>"; };
@@ -56,7 +56,7 @@
 		8027DD172B22217E00A271FE = {
 			isa = PBXGroup;
 			children = (
-				8027DD222B22217E00A271FE /* StarsAPI */,
+				8027DD222B22217E00A271FE /* StarsRatingDemo */,
 				8027DD212B22217E00A271FE /* Products */,
 				80A002492B373BE100798825 /* Frameworks */,
 			);
@@ -65,22 +65,22 @@
 		8027DD212B22217E00A271FE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8027DD202B22217E00A271FE /* StarsAPI.app */,
+				8027DD202B22217E00A271FE /* StarRatingDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8027DD222B22217E00A271FE /* StarsAPI */ = {
+		8027DD222B22217E00A271FE /* StarsRatingDemo */ = {
 			isa = PBXGroup;
 			children = (
-				8027DD232B22217E00A271FE /* StarsAPIApp.swift */,
-				80CE2C992B4C5EEC003DC7E2 /* ParameterDemo.swift */,
+				8027DD232B22217E00A271FE /* StarsRatingDemoApp.swift */,
 				80A002522B373CEC00798825 /* RatingDemo.swift */,
+				80CE2C992B4C5EEC003DC7E2 /* ParameterDemo.swift */,
 				8027DD272B22217F00A271FE /* Assets.xcassets */,
 				8027DD2C2B22217F00A271FE /* StarsAPI.entitlements */,
 				8027DD292B22217F00A271FE /* Preview Content */,
 			);
-			path = StarsAPI;
+			path = StarsRatingDemo;
 			sourceTree = "<group>";
 		};
 		8027DD292B22217F00A271FE /* Preview Content */ = {
@@ -102,9 +102,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8027DD1F2B22217E00A271FE /* StarsAPI */ = {
+		8027DD1F2B22217E00A271FE /* StarRatingDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8027DD2F2B22217F00A271FE /* Build configuration list for PBXNativeTarget "StarsAPI" */;
+			buildConfigurationList = 8027DD2F2B22217F00A271FE /* Build configuration list for PBXNativeTarget "StarRatingDemo" */;
 			buildPhases = (
 				8027DD1C2B22217E00A271FE /* Sources */,
 				8027DD1D2B22217E00A271FE /* Frameworks */,
@@ -115,9 +115,9 @@
 			);
 			dependencies = (
 			);
-			name = StarsAPI;
+			name = StarRatingDemo;
 			productName = StarsAPI;
-			productReference = 8027DD202B22217E00A271FE /* StarsAPI.app */;
+			productReference = 8027DD202B22217E00A271FE /* StarRatingDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -135,7 +135,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 8027DD1B2B22217E00A271FE /* Build configuration list for PBXProject "StarsAPI" */;
+			buildConfigurationList = 8027DD1B2B22217E00A271FE /* Build configuration list for PBXProject "StarRatingDemo" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -148,7 +148,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8027DD1F2B22217E00A271FE /* StarsAPI */,
+				8027DD1F2B22217E00A271FE /* StarRatingDemo */,
 			);
 		};
 /* End PBXProject section */
@@ -171,7 +171,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				80CE2C9A2B4C5EEC003DC7E2 /* ParameterDemo.swift in Sources */,
-				8027DD242B22217E00A271FE /* StarsAPIApp.swift in Sources */,
+				8027DD242B22217E00A271FE /* StarsRatingDemoApp.swift in Sources */,
 				80A002532B373CEC00798825 /* RatingDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -358,7 +358,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8027DD1B2B22217E00A271FE /* Build configuration list for PBXProject "StarsAPI" */ = {
+		8027DD1B2B22217E00A271FE /* Build configuration list for PBXProject "StarRatingDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8027DD2D2B22217F00A271FE /* Debug */,
@@ -367,7 +367,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8027DD2F2B22217F00A271FE /* Build configuration list for PBXNativeTarget "StarsAPI" */ = {
+		8027DD2F2B22217F00A271FE /* Build configuration list for PBXNativeTarget "StarRatingDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8027DD302B22217F00A271FE /* Debug */,

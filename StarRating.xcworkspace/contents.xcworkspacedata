@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Star Rating Implementation/StarsAPI.xcodeproj">
+      location = "group:Star Rating Framework/StarRating.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:StarRating/StarRating.xcodeproj">
+      location = "group:/Users/jeremycook/Projects/Personal Projects/StarRatingAPI/Star Rating Demo/StarRatingDemo.xcodeproj">
    </FileRef>
 </Workspace>

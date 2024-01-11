@@ -9,7 +9,7 @@ import SwiftUI
 import StarRating
 
 @main
-struct StarsAPIApp: App {
+struct StarsRatingDemoApp: App {
     var body: some Scene {
         WindowGroup {
             RatingDemo()
