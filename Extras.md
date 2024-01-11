@@ -57,3 +57,20 @@ Customization parameters:
 
 # Useful Links
 https://forums.swift.org/t/type-erasing-in-swift-anyview-behind-the-scenes/27952/9
+
+
+## Examples
+Here's a rating style which supports half-integer star ratings using SF Symbols:
+```swift
+struct HalfStarRatingStyle: RatingStyle {
+    func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
+    if index < Int(configuration.value) {
+        Image(systemName: "star.fill")
+    } else if CGFloat(index) <= configuration.value - 0.5 {
+            Image(systemName: "star.leadinghalf.filled")
+    } else {
+            Image(systemName: "star")
+    }
+    }
+}
+```
