@@ -113,13 +113,67 @@ struct ColoredBorderRatingStyle: RatingStyle {
     }
 }
 
+struct SquareBackgroundRatingStyle: RatingStyle {
+    func color(value: Int) -> Color {
+        switch value {
+        case 1: .red
+        case 2: .orange
+        case 3: .yellow
+        case 4: .yellow
+        case 5: .green
+        default: .gray
+        }
+    }
+    
+    func makeBody(configuration: RatingStyleConfiguration, index: Int) -> some View {
+        RatingStar(configuration, index: index)
+            .padding(3)
+            .background {
+                Rectangle()
+                    .foregroundStyle(index < Int(configuration.value) ? color(value: Int(configuration.value)) : .gray.opacity(0.4))
+            }
+    }
+}
+
 struct ModifyStyle: View {
+    
     var body: some View {
-        Rating(value: .constant(3))
-            .ratingStyle(ColoredBorderRatingStyle(color: .blue))
-            .ratingStyle(ColoredBorderRatingStyle(color: .red))
+        VStack(spacing: 20) {
+            Group {
+                Rating(value: .constant(3))
+                
+                Rating(value: .constant(3))
+                    .ratingStyle(ColoredBorderRatingStyle(color: .red))
+                
+                Rating(value: .constant(3))
+                    .ratingStyle(ColoredBorderRatingStyle(color: .blue))
+                    .ratingStyle(ColoredBorderRatingStyle(color: .red))
+            }
             .ratingStyle(.circle)
-            .padding()
+            
+            VStack {
+                Rating(value: .constant(1), spacing: 2)
+                Rating(value: .constant(2), spacing: 2)
+                Rating(value: .constant(3), spacing: 2)
+                Rating(value: .constant(5), spacing: 2)
+                
+            }
+            .foregroundStyle(.white)
+            .ratingStyle(SquareBackgroundRatingStyle())
+            .ratingStyle(.star)
+            
+            VStack {
+                Rating(value: .constant(1), spacing: 2)
+                Rating(value: .constant(2), spacing: 2)
+                Rating(value: .constant(3), spacing: 2)
+                Rating(value: .constant(5), spacing: 2)
+                
+            }
+            .foregroundStyle(.white)
+            .ratingStyle(SquareBackgroundRatingStyle())
+            .ratingStyle(.circle)
+        }
+        .padding()
     }
 }
 

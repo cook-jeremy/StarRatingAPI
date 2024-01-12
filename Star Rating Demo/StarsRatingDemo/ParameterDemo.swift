@@ -75,4 +75,5 @@ struct ParameterDemo: View {
 #Preview {
     ParameterDemo()
         .padding()
+        .frame(width: 500)
 }

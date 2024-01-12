@@ -35,7 +35,7 @@
 		8027DD232B22217E00A271FE /* StarsRatingDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarsRatingDemoApp.swift; sourceTree = "<group>"; };
 		8027DD272B22217F00A271FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8027DD2A2B22217F00A271FE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		8027DD2C2B22217F00A271FE /* StarsAPI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StarsAPI.entitlements; sourceTree = "<group>"; };
+		8027DD2C2B22217F00A271FE /* StarsRatingDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StarsRatingDemo.entitlements; sourceTree = "<group>"; };
 		80A0024A2B373BE100798825 /* StarRating.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StarRating.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		80A002522B373CEC00798825 /* RatingDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingDemo.swift; sourceTree = "<group>"; };
 		80CE2C992B4C5EEC003DC7E2 /* ParameterDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterDemo.swift; sourceTree = "<group>"; };
@@ -77,7 +77,7 @@
 				80A002522B373CEC00798825 /* RatingDemo.swift */,
 				80CE2C992B4C5EEC003DC7E2 /* ParameterDemo.swift */,
 				8027DD272B22217F00A271FE /* Assets.xcassets */,
-				8027DD2C2B22217F00A271FE /* StarsAPI.entitlements */,
+				8027DD2C2B22217F00A271FE /* StarsRatingDemo.entitlements */,
 				8027DD292B22217F00A271FE /* Preview Content */,
 			);
 			path = StarsRatingDemo;
@@ -302,11 +302,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = StarsAPI/StarsAPI.entitlements;
+				CODE_SIGN_ENTITLEMENTS = StarsRatingDemo/StarsRatingDemo.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"StarsAPI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"StarsRatingDemo/Preview Content\"";
 				DEVELOPMENT_TEAM = XJC36HQ4H4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -317,7 +318,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = montypylon.StarsAPI;
+				PRODUCT_BUNDLE_IDENTIFIER = montypylon.StarRatingDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = macosx;
 				SUPPORTS_MACCATALYST = NO;
@@ -331,11 +332,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = StarsAPI/StarsAPI.entitlements;
+				CODE_SIGN_ENTITLEMENTS = StarsRatingDemo/StarsRatingDemo.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"StarsAPI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"StarsRatingDemo/Preview Content\"";
 				DEVELOPMENT_TEAM = XJC36HQ4H4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -346,7 +348,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = montypylon.StarsAPI;
+				PRODUCT_BUNDLE_IDENTIFIER = montypylon.StarRatingDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = macosx;
 				SUPPORTS_MACCATALYST = NO;

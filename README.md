@@ -4,10 +4,10 @@
 - [Demo](#demo)
 - [Detailed Design](#detailed-design)
 - [Alternatives Considered](#alternatives-considered)
-  - [Alternative 1](#alternative-1)
-  - [Alternative 2](#alternative-2)
-  - [Alternative 3](#alternative-3)
-  - [Alternative 4](#alternative-4)
+  - [Generic Rating Value](#generic-rating-value)
+  - [Binding to Value in RatingStyleConfiguration](#binding-to-value-in-ratingstyleconfiguration)
+  - [All Stars Instead of One Star](#all-stars-instead-of-one-star)
+  - [ViewBuilder Approach](#viewbuilder-approach)
 
 ## Introduction
 This proposal introduces an API in the SwiftUI framework for a star rating view. For example:
@@ -123,8 +123,8 @@ Rating(value: $value)
 ```
 
 ## Alternatives Considered
-### Alternative 1
-We considered a `RatingStyleConfiguration` that's generic over the type `Value` used in the initializer of `Rating`, so that a custom style can decide how to draw a symbol using the original `BinaryFloatingPoint` type:
+### Generic Rating Value
+As you may have noted, the type of `value` in `RatingStyleConfiguration` is `Double`, regardless of which floating point type is used to create a `Rating`. We considered a `RatingStyleConfiguration` that's generic over the type `Value` used in the initializer of `Rating`, so that a custom style can decide how to draw a symbol using the original `BinaryFloatingPoint` type:
 ```swift
 public protocol RatingStyle {
     @ViewBuilder func makeBody(
@@ -154,19 +154,19 @@ struct Chef: Recipe {
 }
 ```
 There is no single underlying type to infer `Dish` because it depends on the generic parameter `Ingredient` which is allowed to change with the caller. The only way around it is to type erase the parameter or the return value. In our case, erasing `some View` to `any View` in `makeBody` leads to less efficient view diffing, so view updates of `Rating` aren't as efficient because the type of our view hierarchy is erased.
-### Alternative 2
-We considered providing a binding to the value of a rating in `RatingStyleConfiguration`, instead of a read-only value:
+### Binding to Value in RatingStyleConfiguration
+The API does not allow you to modify the value of the rating from the configuration. What if we want to alter the interaction of a rating? We considered providing a binding to the value of a rating in `RatingStyleConfiguration`, instead of a read-only value:
 ```swift
 public struct RatingStyleConfiguration {
     @Binding var value: Double
     public let count: Int
 }
 ```
-This way a custom style can change the value of a rating, altering how a user interacts with the rating. However, the use cases of this are limited. The `makeBody` of `RatingStyle` creates the view for only one symbol, so the custom style can't create a new gesture which covers the entire view, only a new gesture on each symbol. One could add a `.onTapGesture` modifier on each symbol which updates the rating value to the tapped symbol. This would override the drag gesture provided by the framework, but only when the user taps on the symbols. If the user starts a drag in the space between the symbols, they will still be able to drag to change the value.
+However, the use cases of this are limited. The `makeBody` of `RatingStyle` creates the view for only one symbol, so the custom style can't create a new gesture which covers the entire view, only a new gesture on each symbol. One could add a `.onTapGesture` modifier on each symbol which updates the rating value to the tapped symbol. This would override the drag gesture provided by the framework, but only when the user taps on the symbols. If the user starts a drag in the space between the symbols, they will still be able to drag to change the value.
 
 If we look at all the custom styles in the SwiftUI framework, there is only one other style which provides a binding: `ToggleStyle`. `Toggle` has a genuine use case for this binding, because how a `Toggle` is switched on and off has options for customization, for example a rocker switch vs a tap button. The gesture interaction for choosing a rating is more universally defined, so it is not necessary to provide customizability in this aspect. In fact, limiting the type of interaction to a drag gesture improves consistency across platforms and apps, so users are less confused when providing ratings in Apple apps and third party apps.
-### Alternative 3
-We considered a `RatingStyle` whose `makeBody` creates the appearance and behavior of *all* symbols in the rating view, instead of each symbol. The advantage of such a configuration allows for greater customization, at the cost of greater complexity for the developer and the loss of a framework provided gesture. If the user creates a custom style which includes all the symbols, they are responsible for handling how a value is selected based on the interaction with the view. For example, such an implementation would look like:
+### All Stars Instead of One Star
+What if we want to provide a gradient on the stars, or change the orientation of the stars to be vertical? We considered a `RatingStyle` whose `makeBody` creates the appearance and behavior of *all* symbols in the rating view, instead of each symbol. The advantage of such a configuration allows for greater customization, at the cost of greater complexity for the developer and the loss of a framework provided gesture. If the user creates a custom style which includes all the symbols, they are responsible for handling how a value is selected based on the interaction with the view. For example, such an implementation would look like:
 ```swift
 struct StarRatingStyle: RatingStyle {
     func makeBody(configuration: RatingStyleConfiguration) -> some View {
@@ -182,12 +182,13 @@ struct StarRatingStyle: RatingStyle {
 }
 ```
 `Rating` no longer has knowledge of the structure of the view. The custom style above could use a `VStack` instead of an `HStack`, so `Rating` can't provide the gesture logic for selecting a new value because it doesn't know the layout of the symbols in the view. If the user wants the same drag-to-rate gesture as the default implementation in their view, they have to implement it from scratch themselves. At that point, they aren't gaining much by using a `Rating` view.
-### Alternative 4
-We considered using a `@ViewBuilder` closure to define the appearance of each symbol. The `Rating` initializer would be:
+### ViewBuilder Approach
+What if we have a simple style we want to implement, and don't want all the baggage of having to create a `RatingStyle` and apply the style with `.ratingStyle(_:)`? We considered using a `@ViewBuilder` closure to define the appearance of each symbol. The `Rating` initializer would be:
 ```swift
 struct Rating<Symbol>: View where Symbol: View {
     public init<Value>(
         value: Binding<Value>,
+        granularity: CGFloat = 1,
         spacing: CGFloat? = nil,
         count: Int = 5,
         @ViewBuilder symbol: (_ index: Int) -> Symbol
